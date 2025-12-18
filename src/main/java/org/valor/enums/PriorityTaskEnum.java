@@ -11,7 +11,7 @@ public enum PriorityTaskEnum {
         this.priority = priority;
     }
 
-    public PriorityTaskEnum getPriorityTask(Integer priority) {
+    public static PriorityTaskEnum getPriorityTask(Integer priority) {
        switch (priority) {
            case 1 -> {
                return MIDDLE;
