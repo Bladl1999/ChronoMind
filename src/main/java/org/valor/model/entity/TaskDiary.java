@@ -1,6 +1,9 @@
 package org.valor.model.entity;
 
 import jakarta.persistence.*;
+import org.valor.enums.PriorityTaskEnum;
+import org.valor.model.dto.TaskDiaryDto;
+import org.valor.model.dto.TaskDiaryUpdateRequest;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -33,6 +36,24 @@ public class TaskDiary {
     public TaskDiary() {
     }
 
+    public TaskDiary(TaskDiaryDto request) {
+        this.name = request.name();
+        this.taskNote = request.taskNote();
+        this.priority = request.priority().getPriority();
+        this.starTask = request.starTask();
+        this.finishTask = request.finishTask();
+    }
+
+    public TaskDiary update(TaskDiaryUpdateRequest request) {
+        request.name().ifPresent(this::setName);
+        request.taskNote().ifPresent(this::setTaskNote);
+        request.priority().ifPresent(this::setPriority);
+        request.starTask().ifPresent(this::setStarTask);
+        request.finishTask().ifPresent(this::setFinishTask);
+        this.updateTimestamp = Instant.now();
+        return this;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -63,6 +84,10 @@ public class TaskDiary {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+
+    public void setPriority(PriorityTaskEnum priorityTaskEnum) {
+        this.priority = priorityTaskEnum.getPriority();
     }
 
     public Instant getStarTask() {

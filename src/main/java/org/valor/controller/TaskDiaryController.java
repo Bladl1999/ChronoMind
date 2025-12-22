@@ -6,7 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.valor.model.dto.TaskDiaryDto;
+import org.valor.model.dto.TaskDiaryUpdateRequest;
 import org.valor.service.taskdiary.TaskDiaryService;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,8 +25,8 @@ public class TaskDiaryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskDiaryDto>> getAllTaskDiary(){
-        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary();
+    public ResponseEntity<List<TaskDiaryDto>> getAllTaskDiary(Pageable pageable){
+        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary(pageable);
         return ResponseEntity.ok(taskDiary);
     }
 
@@ -41,7 +43,7 @@ public class TaskDiaryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UUID> updateTaskDiary(@PathVariable UUID id, @RequestBody TaskDiaryDto request) {
+    public ResponseEntity<UUID> updateTaskDiary(@PathVariable UUID id, @RequestBody TaskDiaryUpdateRequest request) {
         UUID getId = service.updateTaskDiary(id, request);
         return ResponseEntity.ok(getId);
     }

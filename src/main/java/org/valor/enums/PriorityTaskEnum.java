@@ -25,4 +25,7 @@ public enum PriorityTaskEnum {
        }
     }
 
+    public Integer getPriority() {
+        return priority;
+    }
 }
