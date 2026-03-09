@@ -53,6 +53,6 @@ public class TaskDiaryServiceImpl implements TaskDiaryService {
 
     @Override
     public UUID deleteTaskDiary(UUID id) {
-        return repository.safeDelete(id, Instant.now());
+        return repository.safeDelete(id, Instant.now(), Instant.now().toString());
     }
 }
