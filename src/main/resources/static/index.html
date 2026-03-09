@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Ежедневник</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Главный заголовок */
+        .main-title {
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 30px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Две колонки */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* Общие стили для карточек */
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Форма создания записи */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .datetime-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Счетчик символов */
+        .char-counter {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Приоритеты */
+        .priority-group {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .priority-option {
+            flex: 1;
+        }
+
+        .priority-option input[type="radio"] {
+            display: none;
+        }
+
+        .priority-option label {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .priority-option input[type="radio"]:checked + label {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .priority-option.low input:checked + label {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+
+        .priority-option.medium input:checked + label {
+            background: #ff9800;
+            border-color: #ff9800;
+        }
+
+        .priority-option.high input:checked + label {
+            background: #f44336;
+            border-color: #f44336;
+        }
+
+        /* Кнопка сохранения */
+        .save-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 16px;
+        }
+
+        .save-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Список записей */
+        .entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .entry-item {
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 16px;
+            transition: all 0.3s;
+        }
+
+        .entry-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .entry-datetime {
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 600;
+            background: #f0f3ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .entry-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .entry-notes {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+            padding-left: 12px;
+            border-left: 3px solid #667eea;
+        }
+
+        .entry-priority {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .priority-low {
+            background: #e8f5e8;
+            color: #4caf50;
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
+        .priority-high {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.success {
+            background: #4caf50;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .notification.info {
+            background: #2196f3;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="main-title">📔 Мой Ежедневник</h1>
+
+    <div class="dashboard">
+        <!-- Левая колонка: Форма создания -->
+        <div class="card">
+            <div class="card-header">
+                <h2>➕ Новая запись</h2>
+            </div>
+
+            <form id="diaryForm">
+                <div class="datetime-row">
+                    <div class="form-group">
+                        <label>📅 Дата</label>
+                        <input type="date" id="date" value="2025-12-15" required>
+                    </div>
+                    <div class="form-group">
+                        <label>⏰ Время начала</label>
+                        <input type="time" id="startTime" value="09:00" required>
+                    </div>
+                </div>
+
+                <div class="datetime-row">
+                    <div class="form-group">
+                        <label>⏱️ Время окончания</label>
+                        <input type="time" id="endTime" value="10:00" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>📋 Задача</label>
+                    <input type="text" id="task" value="Введите задачу..." placeholder="Что нужно сделать?" required>
+                </div>
+
+                <div class="form-group">
+                    <label>📝 Заметки</label>
+                    <textarea id="notes" rows="3" placeholder="Добавьте заметки..." maxlength="500">Добавьте заметки...</textarea>
+                    <div class="char-counter" id="charCounter">0/500 символов</div>
+                </div>
+
+                <div class="form-group">
+                    <label>🎯 Приоритет</label>
+                    <div class="priority-group">
+                        <div class="priority-option low">
+                            <input type="radio" name="priority" id="low" value="LOW" checked>
+                            <label for="low">Низкий</label>
+                        </div>
+                        <div class="priority-option medium">
+                            <input type="radio" name="priority" id="medium" value="MEDIUM">
+                            <label for="medium">Средний</label>
+                        </div>
+                        <div class="priority-option high">
+                            <input type="radio" name="priority" id="high" value="HIGH">
+                            <label for="high">Высокий</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn" id="submitBtn">💾 Сохранить запись</button>
+            </form>
+        </div>
+
+        <!-- Правая колонка: Мои записи -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📋 Мои записи</h2>
+                <span class="entry-datetime" id="entriesCount">Всего: 0 записей</span>
+            </div>
+
+            <div class="entries-list" id="entriesList">
+                <!-- Записи будут загружаться сюда -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Контейнер для уведомлений -->
+<div id="notification"></div>
+
+<script>
+    // Базовый URL вашего бэкенда
+    const API_BASE_URL = 'http://localhost:8080/api'; // Измените на свой URL
+
+    // Функция для показа уведомлений
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        notification.innerHTML = `<div class="notification ${type}">${message}</div>`;
+
+        setTimeout(() => {
+            notification.innerHTML = '';
+        }, 3000);
+    }
+
+    // Функция для загрузки всех записей
+    async function loadEntries() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/entries`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при загрузке записей');
+            }
+
+            const entries = await response.json();
+            displayEntries(entries);
+        } catch (error) {
+            console.error('Error loading entries:', error);
+            showNotification('Ошибка при загрузке записей', 'error');
+        }
+    }
+
+    // Функция для отображения записей
+    function displayEntries(entries) {
+        const entriesList = document.getElementById('entriesList');
+        const entriesCount = document.getElementById('entriesCount');
+
+        entriesCount.textContent = `Всего: ${entries.length} записей`;
+
+        if (entries.length === 0) {
+            entriesList.innerHTML = '<div class="entry-item">Нет записей</div>';
+            return;
+        }
+
+        entriesList.innerHTML = entries.map(entry => {
+            // Определяем класс приоритета
+            let priorityClass = 'priority-low';
+            let priorityText = 'Низкий';
+
+            if (entry.priority === 'MEDIUM') {
+                priorityClass = 'priority-medium';
+                priorityText = 'Средний';
+            } else if (entry.priority === 'HIGH') {
+                priorityClass = 'priority-high';
+                priorityText = 'Высокий';
+            }
+
+            return `
+                <div class="entry-item">
+                    <div class="entry-header">
+                        <span class="entry-datetime">${entry.date} • ${entry.startTime} - ${entry.endTime}</span>
+                        <span class="entry-priority ${priorityClass}">${priorityText}</span>
+                    </div>
+                    <div class="entry-title">${entry.task}</div>
+                    ${entry.notes ? `<div class="entry-notes">${entry.notes}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Обработчик отправки формы
+    document.getElementById('diaryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '⏳ Сохранение...';
+
+        // Собираем данные из формы
+        const formData = {
+            date: document.getElementById('date').value,
+            startTime: document.getElementById('startTime').value,
+            endTime: document.getElementById('endTime').value,
+            task: document.getElementById('task').value,
+            notes: document.getElementById('notes').value,
+            priority: document.querySelector('input[name="priority"]:checked').value
+        };
+
+        try {
+            // Отправляем POST запрос на бэкенд
+            const response = await fetch(`${API_BASE_URL}/entries`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при сохранении записи');
+            }
+
+            const savedEntry = await response.json();
+
+            // Показываем успешное уведомление
+            showNotification('Запись успешно сохранена!', 'success');
+
+            // Очищаем форму (опционально)
+            // this.reset();
+
+            // Перезагружаем список записей
+            await loadEntries();
+
+        } catch (error) {
+            console.error('Error saving entry:', error);
+            showNotification('Ошибка при сохранении записи', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '💾 Сохранить запись';
+        }
+    });
+
+    // Счетчик символов для заметок
+    const notesTextarea = document.getElementById('notes');
+    const charCounter = document.getElementById('charCounter');
+
+    notesTextarea.addEventListener('input', function() {
+        const length = this.value.length;
+        charCounter.textContent = `${length}/500 символов`;
+
+        if (length > 500) {
+            charCounter.style.color = 'red';
+        } else {
+            charCounter.style.color = '#888';
+        }
+    });
+
+    // Загружаем записи при загрузке страницы
+    document.addEventListener('DOMContentLoaded', loadEntries);
+</script>
+</body>
+</html>
