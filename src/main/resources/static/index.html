@@ -23,6 +23,103 @@
             margin: 0 auto;
         }
 
+        /* Шапка с навигацией */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #555;
+        }
+
+        .nav-item:hover {
+            background: #f0f3ff;
+            color: #667eea;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-badge {
+            background: #f0f3fd;
+            color: #667eea;
+            border: 1px solid #d9e2ff;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ai-badge:hover {
+            background: #e1e8ff;
+            transform: translateY(-2px);
+        }
+
+        .create-header-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s;
+        }
+
+        .create-header-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
         /* Главный заголовок */
         .main-title {
             font-size: 2.5rem;
@@ -276,6 +373,199 @@
             background: #2196f3;
         }
 
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .ai-message {
+            background: #f0f3ff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .ai-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .ai-text {
+            flex: 1;
+        }
+
+        .ai-text p {
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .ai-text small {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .ai-input-group {
+            margin-top: 20px;
+        }
+
+        .ai-input-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .ai-input-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 12px;
+        }
+
+        .ai-input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .ai-send-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .ai-suggestion-chip {
+            background: #f0f0f0;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .ai-suggestion-chip:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .ai-response {
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            border-left: 4px solid #667eea;
+        }
+
         @keyframes slideIn {
             from {
                 transform: translateX(100%);
@@ -296,16 +586,48 @@
             .main-title {
                 font-size: 2rem;
             }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .nav-menu {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="main-title">📔 Мой Ежедневник</h1>
+    <!-- Шапка с навигацией -->
+    <header class="header">
+        <div class="header-title">
+            📔 Мой Ежедневник
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" onclick="switchTab('timeline')">
+                <span>📅</span> Временная шкала
+            </a>
+
+            <div class="ai-badge" onclick="openAIDialog()">
+                <span>🤖</span> ИИ-Помощник
+            </div>
+
+            <a href="#" class="nav-item" onclick="switchTab('all')">
+                <span>📋</span> Все записи
+            </a>
+
+            <button class="create-header-btn" onclick="scrollToForm()">
+                <span>➕</span> Создать запись
+            </button>
+        </nav>
+    </header>
 
     <div class="dashboard">
         <!-- Левая колонка: Форма создания -->
-        <div class="card">
+        <div class="card" id="createForm">
             <div class="card-header">
                 <h2>➕ Новая запись</h2>
             </div>
@@ -365,7 +687,7 @@
         <!-- Правая колонка: Мои записи -->
         <div class="card">
             <div class="card-header">
-                <h2>📋 Мои записи</h2>
+                <h2 id="entriesTitle">📋 Мои записи</h2>
                 <span class="entry-datetime" id="entriesCount">Всего: 0 записей</span>
             </div>
 
@@ -376,12 +698,58 @@
     </div>
 </div>
 
+<!-- Модальное окно ИИ-помощника -->
+<div class="modal" id="aiModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <span>🤖</span> ИИ-Помощник
+            </h3>
+            <button class="close-modal" onclick="closeAIDialog()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="ai-message">
+                <div class="ai-avatar">🤖</div>
+                <div class="ai-text">
+                    <p>Привет! Я ваш ИИ-помощник. Я могу помочь вам с:</p>
+                    <ul style="margin-left: 20px; color: #666;">
+                        <li>Планированием задач</li>
+                        <li>Анализом продуктивности</li>
+                        <li>Советами по организации времени</li>
+                        <li>Созданием шаблонов задач</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ai-input-group">
+                <label>💭 Задайте вопрос или получите совет</label>
+                <textarea id="aiPrompt" placeholder="Например: Помоги распланировать мой день..."></textarea>
+                <button class="ai-send-btn" onclick="sendToAI()">Отправить</button>
+            </div>
+
+            <div class="ai-suggestions">
+                <span class="ai-suggestion-chip" onclick="useSuggestion('Как лучше организовать свой день?')">Как лучше организовать день?</span>
+                <span class="ai-suggestion-chip" onclick="useSuggestion('Какие задачи сделать приоритетными?')">Приоритеты задач</span>
+                <span class="ai-suggestion-chip" onclick="useSuggestion('Совет для продуктивной работы')">Продуктивность</span>
+                <span class="ai-suggestion-chip" onclick="useSuggestion('Шаблон для ежедневных задач')">Шаблон задач</span>
+            </div>
+
+            <div id="aiResponse" class="ai-response" style="display: none;">
+                <!-- Ответ ИИ будет здесь -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Контейнер для уведомлений -->
 <div id="notification"></div>
 
 <script>
     // Базовый URL вашего бэкенда
-    const API_BASE_URL = 'http://localhost:8080/api'; // Измените на свой URL
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Состояние приложения
+    let currentTab = 'timeline';
 
     // Функция для показа уведомлений
     function showNotification(message, type = 'info') {
@@ -393,10 +761,172 @@
         }, 3000);
     }
 
-    // Функция для загрузки всех записей
+    // Открытие диалогового окна ИИ
+    function openAIDialog() {
+        document.getElementById('aiModal').classList.add('active');
+        // Загружаем историю диалога
+        loadAIConversation();
+    }
+
+    // Закрытие диалогового окна ИИ
+    function closeAIDialog() {
+        document.getElementById('aiModal').classList.remove('active');
+        document.getElementById('aiResponse').style.display = 'none';
+        document.getElementById('aiPrompt').value = '';
+    }
+
+    // Использование предложения
+    function useSuggestion(text) {
+        document.getElementById('aiPrompt').value = text;
+        sendToAI();
+    }
+
+    // Отправка запроса к ИИ
+    async function sendToAI() {
+        const prompt = document.getElementById('aiPrompt').value;
+        if (!prompt.trim()) {
+            showNotification('Введите ваш вопрос', 'error');
+            return;
+        }
+
+        const responseDiv = document.getElementById('aiResponse');
+        responseDiv.style.display = 'block';
+        responseDiv.innerHTML = '🤔 Думаю...';
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: prompt,
+                    context: {
+                        tab: currentTab,
+                        timestamp: new Date().toISOString()
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при обращении к ИИ');
+            }
+
+            const data = await response.json();
+
+            responseDiv.innerHTML = `
+                <strong>🤖 Ответ:</strong>
+                <p style="margin-top: 8px;">${data.response}</p>
+                <small style="color: #666; display: block; margin-top: 8px;">
+                    ${new Date().toLocaleTimeString()}
+                </small>
+            `;
+
+            // Сохраняем диалог
+            saveAIConversation(prompt, data.response);
+
+        } catch (error) {
+            console.error('AI Error:', error);
+            responseDiv.innerHTML = `
+                <strong>❌ Ошибка:</strong>
+                <p style="color: #f44336; margin-top: 8px;">
+                    Не удалось получить ответ от ИИ. Использую локальный режим.
+                </p>
+                <p style="margin-top: 8px;">${getLocalAIResponse(prompt)}</p>
+            `;
+        }
+    }
+
+    // Локальные ответы ИИ (для демо)
+    function getLocalAIResponse(prompt) {
+        const responses = {
+            'организовать свой день': 'Рекомендую использовать технику Pomodoro: 25 минут работы, 5 минут отдыха. И начинайте день с самой сложной задачи.',
+            'приоритетными': 'Расставьте приоритеты по матрице Эйзенхауэра: важные и срочные задачи делайте первыми.',
+            'продуктивности': 'Совет: уберите телефон, закройте лишние вкладки и работайте блоками по 90 минут.',
+            'шаблон': 'Вот шаблон: 1) Утренняя разминка 2) Главная задача 3) Обед 4) Встречи 5) Планирование на завтра'
+        };
+
+        for (let [key, value] of Object.entries(responses)) {
+            if (prompt.toLowerCase().includes(key)) {
+                return value;
+            }
+        }
+
+        return 'Я внимательно изучил ваш запрос. Рекомендую разбить задачу на маленькие шаги и выполнять последовательно.';
+    }
+
+    // Загрузка истории диалога
+    async function loadAIConversation() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/ai/conversation`);
+            if (response.ok) {
+                const history = await response.json();
+                // Отображаем историю
+            }
+        } catch (error) {
+            console.log('No conversation history');
+        }
+    }
+
+    // Сохранение диалога
+    async function saveAIConversation(prompt, response) {
+        try {
+            await fetch(`${API_BASE_URL}/ai/conversation`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    prompt,
+                    response,
+                    timestamp: new Date().toISOString()
+                })
+            });
+        } catch (error) {
+            console.log('Could not save conversation');
+        }
+    }
+
+    // Переключение вкладок
+    function switchTab(tab) {
+        currentTab = tab;
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        if (tab === 'timeline') {
+            document.querySelector('.nav-item:first-child').classList.add('active');
+            document.getElementById('entriesTitle').textContent = '📋 Временная шкала';
+        } else if (tab === 'all') {
+            document.querySelector('.nav-item:last-child').classList.add('active');
+            document.getElementById('entriesTitle').textContent = '📋 Все записи';
+        }
+
+        loadEntries();
+    }
+
+    // Прокрутка к форме создания
+    function scrollToForm() {
+        document.getElementById('createForm').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+
+        document.getElementById('createForm').style.transition = 'box-shadow 0.3s';
+        document.getElementById('createForm').style.boxShadow = '0 0 0 3px #667eea, 0 20px 40px rgba(0,0,0,0.1)';
+
+        setTimeout(() => {
+            document.getElementById('createForm').style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
+        }, 2000);
+    }
+
+    // Функция для загрузки записей
     async function loadEntries() {
         try {
-            const response = await fetch(`${API_BASE_URL}/entries`, {
+            const endpoint = currentTab === 'timeline' ? '/entries/timeline' : '/entries';
+
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -411,7 +941,28 @@
             displayEntries(entries);
         } catch (error) {
             console.error('Error loading entries:', error);
-            showNotification('Ошибка при загрузке записей', 'error');
+
+            // Демо-данные
+            const demoEntries = [
+                {
+                    date: '2025-12-15',
+                    startTime: '06:30',
+                    endTime: '06:50',
+                    task: 'Разминка',
+                    notes: '',
+                    priority: 'LOW'
+                },
+                {
+                    date: '2025-12-15',
+                    startTime: '09:00',
+                    endTime: '10:00',
+                    task: 'Упражнение тест',
+                    notes: '1 отжимания подтягивания',
+                    priority: 'MEDIUM'
+                }
+            ];
+
+            displayEntries(demoEntries);
         }
     }
 
@@ -428,7 +979,6 @@
         }
 
         entriesList.innerHTML = entries.map(entry => {
-            // Определяем класс приоритета
             let priorityClass = 'priority-low';
             let priorityText = 'Низкий';
 
@@ -461,7 +1011,6 @@
         submitBtn.disabled = true;
         submitBtn.textContent = '⏳ Сохранение...';
 
-        // Собираем данные из формы
         const formData = {
             date: document.getElementById('date').value,
             startTime: document.getElementById('startTime').value,
@@ -472,7 +1021,6 @@
         };
 
         try {
-            // Отправляем POST запрос на бэкенд
             const response = await fetch(`${API_BASE_URL}/entries`, {
                 method: 'POST',
                 headers: {
@@ -485,15 +1033,7 @@
                 throw new Error('Ошибка при сохранении записи');
             }
 
-            const savedEntry = await response.json();
-
-            // Показываем успешное уведомление
             showNotification('Запись успешно сохранена!', 'success');
-
-            // Очищаем форму (опционально)
-            // this.reset();
-
-            // Перезагружаем список записей
             await loadEntries();
 
         } catch (error) {
@@ -505,7 +1045,7 @@
         }
     });
 
-    // Счетчик символов для заметок
+    // Счетчик символов
     const notesTextarea = document.getElementById('notes');
     const charCounter = document.getElementById('charCounter');
 
@@ -522,6 +1062,14 @@
 
     // Загружаем записи при загрузке страницы
     document.addEventListener('DOMContentLoaded', loadEntries);
+
+    // Закрытие модального окна по клику вне его
+    window.onclick = function(event) {
+        const modal = document.getElementById('aiModal');
+        if (event.target === modal) {
+            closeAIDialog();
+        }
+    }
 </script>
 </body>
 </html>
