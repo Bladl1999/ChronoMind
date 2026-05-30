@@ -25,10 +25,17 @@ public class TaskDiaryServiceImpl implements TaskDiaryService {
     }
 
     @Override
-    public List<TaskDiaryDto> getAllTaskDiary(Pageable pageable) {
+    public List<TaskDiaryDto> getAllTaskDiary(String date, Pageable pageable) {
+        //TODO Добавить обработку с датой
+
         return repository.findAll(pageable)
                 .map(TaskDiaryDto::fromEntity)
                 .toList();
+    }
+
+    @Override
+    public TaskDiaryDto getByTaskDiaryByData(String date) {
+        return null;
     }
 
     @Override

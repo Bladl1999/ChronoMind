@@ -2,6 +2,7 @@ package org.valor.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,10 +26,14 @@ public class TaskDiaryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskDiaryDto>> getAllTaskDiary(Pageable pageable){
-        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary(pageable);
+    public ResponseEntity<List<TaskDiaryDto>> getAllTaskDiary(@RequestParam("date") String date, Pageable pageable){
+        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary(date, pageable);
         return ResponseEntity.ok(taskDiary);
     }
+
+
+//    @GetMapping("/timeline")
+
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskDiaryDto> getByTaskDiaryById(@PathVariable UUID id){

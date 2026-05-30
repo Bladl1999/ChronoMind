@@ -2,37 +2,50 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой Ежедневник</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Ежедневник для планирования задач с ИИ-помощником">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Мой Ежедневник | Планируй задачи с ИИ</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="container">
     <!-- Шапка с навигацией -->
-    <header class="header">
+    <header class="header" role="banner">
         <div class="header-title">
-            📔 Мой Ежедневник
+            <span class="header-icon">📔</span>
+            <span>Мой Ежедневник</span>
         </div>
 
-        <nav class="nav-menu">
-            <a href="#" class="nav-item active" onclick="switchTab('timeline')">
-                <span>📅</span> Временная шкала
+        <nav class="nav-menu" role="navigation" aria-label="Главная навигация">
+            <a href="timeline.html" class="nav-item">
+                <span aria-hidden="true">📅</span>
+                <span>Временная шкала</span>
             </a>
 
-            <div class="ai-badge" onclick="openAIDialog()">
-                <span>🤖</span> ИИ-Помощник
-            </div>
+            <button class="ai-badge" onclick="openAIDialog()" aria-label="Открыть ИИ помощника">
+                <span aria-hidden="true">🤖</span>
+                <span>ИИ-Помощник</span>
+            </button>
 
-            <a href="#" class="nav-item" onclick="switchTab('all')">
-                <span>📋</span> Все записи
-            </a>
+            <button class="nav-item" onclick="switchTab('all')" aria-label="Все записи">
+                <span aria-hidden="true">📋</span>
+                <span>Все записи</span>
+            </button>
 
-            <a href="#" class="nav-item" onclick="openStatsModal()">
-                <span>📊</span> Статистика
-            </a>
+            <button class="nav-item" onclick="openStatsModal()" aria-label="Статистика">
+                <span aria-hidden="true">📊</span>
+                <span>Статистика</span>
+            </button>
 
-            <button class="create-header-btn" onclick="scrollToForm()">
-                <span>➕</span> Создать запись
+            <button class="create-header-btn" onclick="scrollToForm()" aria-label="Создать новую запись">
+                <span aria-hidden="true">➕</span>
+                <span>Создать запись</span>
             </button>
         </nav>
     </header>
@@ -41,62 +54,71 @@
         <!-- Левая колонка: Форма создания/редактирования -->
         <div class="card" id="createForm">
             <div class="card-header">
-                <h2 id="formTitle">➕ Новая запись</h2>
+                <h2 id="formTitle">
+                    <span class="form-icon">➕</span>
+                    <span>Новая запись</span>
+                </h2>
             </div>
 
-            <form id="diaryForm">
+            <form id="diaryForm" novalidate>
                 <input type="hidden" id="editId" value="">
 
                 <div class="datetime-row">
                     <div class="form-group">
-                        <label>📅 Дата</label>
-                        <input type="date" id="date" required>
+                        <label for="date">📅 Дата</label>
+                        <input type="date" id="date" required aria-required="true">
                     </div>
                     <div class="form-group">
-                        <label>⏰ Время начала</label>
-                        <input type="time" id="startTime" required>
+                        <label for="startTime">⏰ Время начала</label>
+                        <input type="time" id="startTime" required aria-required="true">
                     </div>
                 </div>
 
                 <div class="datetime-row">
                     <div class="form-group">
-                        <label>⏱️ Время окончания</label>
-                        <input type="time" id="endTime" required>
+                        <label for="endTime">⏱️ Время окончания</label>
+                        <input type="time" id="endTime" required aria-required="true">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>📋 Задача</label>
-                    <input type="text" id="task" placeholder="Что нужно сделать?" required>
+                    <label for="task">📋 Задача</label>
+                    <input type="text" id="task" placeholder="Что нужно сделать?" required aria-required="true" maxlength="200">
                 </div>
 
                 <div class="form-group">
-                    <label>📝 Заметки</label>
+                    <label for="notes">📝 Заметки</label>
                     <textarea id="notes" rows="3" placeholder="Добавьте заметки..." maxlength="500"></textarea>
                     <div class="char-counter" id="charCounter">0/500 символов</div>
                 </div>
 
                 <div class="form-group">
                     <label>🎯 Приоритет</label>
-                    <div class="priority-group">
-                        <div class="priority-option low">
-                            <input type="radio" name="priority" id="low" value="LOW" checked>
-                            <label for="low">Низкий</label>
-                        </div>
-                        <div class="priority-option medium">
-                            <input type="radio" name="priority" id="medium" value="MEDIUM">
-                            <label for="medium">Средний</label>
-                        </div>
-                        <div class="priority-option high">
-                            <input type="radio" name="priority" id="high" value="HIGH">
-                            <label for="high">Высокий</label>
-                        </div>
+                    <div class="priority-group" role="radiogroup" aria-label="Приоритет задачи">
+                        <label class="priority-option low">
+                            <input type="radio" name="priority" value="LOW" checked>
+                            <span class="priority-label">Низкий</span>
+                        </label>
+                        <label class="priority-option medium">
+                            <input type="radio" name="priority" value="MEDIUM">
+                            <span class="priority-label">Средний</span>
+                        </label>
+                        <label class="priority-option high">
+                            <input type="radio" name="priority" value="HIGH">
+                            <span class="priority-label">Высокий</span>
+                        </label>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 12px;">
-                    <button type="submit" class="save-btn" id="submitBtn">💾 Сохранить запись</button>
-                    <button type="button" class="save-btn" id="cancelEditBtn" onclick="cancelEdit()" style="display: none; background: #999;">❌ Отмена</button>
+                <div class="form-actions">
+                    <button type="submit" class="save-btn" id="submitBtn">
+                        <span>💾</span>
+                        <span>Сохранить запись</span>
+                    </button>
+                    <button type="button" class="save-btn cancel-btn" id="cancelEditBtn" onclick="cancelEdit()" style="display: none;">
+                        <span>❌</span>
+                        <span>Отмена</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -104,36 +126,48 @@
         <!-- Правая колонка: Мои записи -->
         <div class="card">
             <div class="card-header">
-                <h2 id="entriesTitle">📋 Мои записи</h2>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <input type="text" id="searchInput" placeholder="🔍 Поиск..." style="padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd;">
-                    <button onclick="exportData()" class="ai-badge" style="background: #4caf50; color: white;">📥 Экспорт</button>
+                <h2 id="entriesTitle">
+                    <span class="form-icon">📋</span>
+                    <span>Мои записи</span>
+                </h2>
+                <div class="entries-controls">
+                    <div class="search-wrapper">
+                        <input type="text" id="searchInput" placeholder="🔍 Поиск..." aria-label="Поиск записей">
+                    </div>
+                    <button onclick="exportData()" class="export-btn" aria-label="Экспорт данных">
+                        📥 Экспорт
+                    </button>
                     <span class="entry-datetime" id="entriesCount">Всего: 0 записей</span>
                 </div>
             </div>
 
             <div class="entries-list" id="entriesList">
-                <!-- Записи будут загружаться сюда -->
+                <div class="loading-skeleton">
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Модальное окно ИИ-помощника -->
-<div class="modal" id="aiModal">
+<div class="modal" id="aiModal" role="dialog" aria-modal="true" aria-label="ИИ помощник">
     <div class="modal-content">
         <div class="modal-header">
             <h3>
-                <span>🤖</span> ИИ-Помощник
+                <span aria-hidden="true">🤖</span>
+                <span>ИИ-Помощник</span>
             </h3>
-            <button class="close-modal" onclick="closeAIDialog()">×</button>
+            <button class="close-modal" onclick="closeAIDialog()" aria-label="Закрыть">×</button>
         </div>
         <div class="modal-body">
             <div class="ai-message">
-                <div class="ai-avatar">🤖</div>
+                <div class="ai-avatar" aria-hidden="true">🤖</div>
                 <div class="ai-text">
                     <p>Привет! Я ваш ИИ-помощник. Я могу помочь вам с:</p>
-                    <ul style="margin-left: 20px; color: #666;">
+                    <ul>
                         <li>Планированием задач</li>
                         <li>Анализом продуктивности</li>
                         <li>Советами по организации времени</li>
@@ -143,43 +177,48 @@
             </div>
 
             <div class="ai-input-group">
-                <label>💭 Задайте вопрос или получите совет</label>
-                <textarea id="aiPrompt" placeholder="Например: Помоги распланировать мой день..."></textarea>
-                <button class="ai-send-btn" onclick="sendToAI()">Отправить</button>
+                <label for="aiPrompt">💭 Задайте вопрос или получите совет</label>
+                <textarea id="aiPrompt" placeholder="Например: Помоги распланировать мой день..." rows="3"></textarea>
+                <button class="ai-send-btn" onclick="sendToAI()">
+                    <span>🚀</span>
+                    <span>Отправить</span>
+                </button>
             </div>
 
             <div class="ai-suggestions">
-                <span class="ai-suggestion-chip" onclick="useSuggestion('Как лучше организовать свой день?')">Как лучше организовать день?</span>
-                <span class="ai-suggestion-chip" onclick="useSuggestion('Какие задачи сделать приоритетными?')">Приоритеты задач</span>
-                <span class="ai-suggestion-chip" onclick="useSuggestion('Совет для продуктивной работы')">Продуктивность</span>
-                <span class="ai-suggestion-chip" onclick="useSuggestion('Шаблон для ежедневных задач')">Шаблон задач</span>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Как лучше организовать свой день?')">Как лучше организовать день?</button>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Какие задачи сделать приоритетными?')">Приоритеты задач</button>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Совет для продуктивной работы')">Продуктивность</button>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Шаблон для ежедневных задач')">Шаблон задач</button>
             </div>
 
-            <div id="aiResponse" class="ai-response" style="display: none;">
-                <!-- Ответ ИИ будет здесь -->
-            </div>
+            <div id="aiResponse" class="ai-response" style="display: none;"></div>
         </div>
     </div>
 </div>
 
 <!-- Модальное окно статистики -->
-<div class="modal" id="statsModal">
-    <div class="modal-content" style="max-width: 600px;">
+<div class="modal" id="statsModal" role="dialog" aria-modal="true" aria-label="Статистика продуктивности">
+    <div class="modal-content modal-large">
         <div class="modal-header">
             <h3>
-                <span>📊</span> Статистика продуктивности
+                <span aria-hidden="true">📊</span>
+                <span>Статистика продуктивности</span>
             </h3>
-            <button class="close-modal" onclick="closeStatsModal()">×</button>
+            <button class="close-modal" onclick="closeStatsModal()" aria-label="Закрыть">×</button>
         </div>
         <div class="modal-body" id="statsContent">
-            <div style="text-align: center;">Загрузка статистики...</div>
+            <div class="stats-loading">
+                <div class="spinner"></div>
+                <p>Загрузка статистики...</p>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Контейнер для уведомлений -->
-<div id="notification"></div>
+<div id="notification" aria-live="polite" role="status"></div>
 
-<script src="js/app.js"></script>
+<script src="js/app.js" defer></script>
 </body>
 </html>

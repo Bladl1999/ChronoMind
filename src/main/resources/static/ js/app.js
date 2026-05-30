@@ -1,5 +1,5 @@
 // Базовый URL вашего бэкенда
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 // Состояние приложения
 let currentTab = 'timeline';
@@ -21,10 +21,10 @@ function showNotification(message, type = 'info') {
 // Загрузка записей
 async function loadEntries() {
     try {
-        let url = `${API_BASE_URL}/entries`;
+        let url = `${API_BASE_URL}/task-diary`;
 
         if (currentTab === 'timeline') {
-            url = `${API_BASE_URL}/entries/timeline`;
+            url = `${API_BASE_URL}/task-diary/timeline`;
         }
 
         const response = await fetch(url);
@@ -61,7 +61,7 @@ async function searchEntries(query) {
     }
 
     try {
-        const response = await fetch(`${API_BASE_URL}/entries/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`${API_BASE_URL}/task-diary/search?q=${encodeURIComponent(query)}`);
         if (!response.ok) throw new Error('Ошибка поиска');
 
         const entries = await response.json();
@@ -79,7 +79,7 @@ async function searchEntries(query) {
 
 // Создание записи
 async function createEntry(formData) {
-    const response = await fetch(`${API_BASE_URL}/entries`, {
+    const response = await fetch(`${API_BASE_URL}/task-diary`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -91,7 +91,7 @@ async function createEntry(formData) {
 
 // Обновление записи
 async function updateEntry(id, formData) {
-    const response = await fetch(`${API_BASE_URL}/entries/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/task-diary/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -103,7 +103,7 @@ async function updateEntry(id, formData) {
 
 // Удаление записи
 async function deleteEntry(id) {
-    const response = await fetch(`${API_BASE_URL}/entries/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/task-diary/${id}`, {
         method: 'DELETE'
     });
 
@@ -247,9 +247,9 @@ function displayEntries(entries) {
 }
 
 // Редактирование записи
-async function editEntry(id) {
+window.editEntry = async function(id) {
     try {
-        const response = await fetch(`${API_BASE_URL}/entries/${id}`);
+        const response = await fetch(`${API_BASE_URL}/task-diary/${id}`);
         if (!response.ok) throw new Error('Ошибка загрузки записи');
 
         const entry = await response.json();
@@ -275,10 +275,10 @@ async function editEntry(id) {
         console.error('Edit error:', error);
         showNotification('Ошибка загрузки записи', 'error');
     }
-}
+};
 
 // Отмена редактирования
-function cancelEdit() {
+window.cancelEdit = function() {
     document.getElementById('diaryForm').reset();
     document.getElementById('editId').value = '';
     document.getElementById('formTitle').innerHTML = '➕ Новая запись';
@@ -292,14 +292,14 @@ function cancelEdit() {
     document.getElementById('task').value = '';
     document.getElementById('notes').value = '';
     document.querySelector('input[name="priority"][value="LOW"]').checked = true;
-}
+};
 
 // Подтверждение удаления
-function confirmDelete(id) {
+window.confirmDelete = function(id) {
     if (confirm('Вы уверены, что хотите удалить эту запись?')) {
         performDelete(id);
     }
-}
+};
 
 // Выполнение удаления
 async function performDelete(id) {
@@ -316,25 +316,25 @@ async function performDelete(id) {
 // ========== ИИ-ПОМОЩНИК ==========
 
 // Открытие диалогового окна ИИ
-function openAIDialog() {
+window.openAIDialog = function() {
     document.getElementById('aiModal').classList.add('active');
-}
+};
 
 // Закрытие диалогового окна ИИ
-function closeAIDialog() {
+window.closeAIDialog = function() {
     document.getElementById('aiModal').classList.remove('active');
     document.getElementById('aiResponse').style.display = 'none';
     document.getElementById('aiPrompt').value = '';
-}
+};
 
 // Использование предложения
-function useSuggestion(text) {
+window.useSuggestion = function(text) {
     document.getElementById('aiPrompt').value = text;
     sendToAI();
-}
+};
 
 // Отправка запроса к ИИ
-async function sendToAI() {
+window.sendToAI = async function() {
     const prompt = document.getElementById('aiPrompt').value;
     if (!prompt.trim()) {
         showNotification('Введите ваш вопрос', 'error');
@@ -379,7 +379,7 @@ async function sendToAI() {
             <p style="margin-top: 8px;">${getLocalAIResponse(prompt)}</p>
         `;
     }
-}
+};
 
 // Локальные ответы ИИ (для демо)
 function getLocalAIResponse(prompt) {
@@ -402,7 +402,7 @@ function getLocalAIResponse(prompt) {
 // ========== НАВИГАЦИЯ ==========
 
 // Переключение вкладок
-function switchTab(tab) {
+window.switchTab = function(tab) {
     currentTab = tab;
 
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -420,10 +420,10 @@ function switchTab(tab) {
     // Очищаем поиск
     document.getElementById('searchInput').value = '';
     loadEntries();
-}
+};
 
 // Прокрутка к форме создания
-function scrollToForm() {
+window.scrollToForm = function() {
     document.getElementById('createForm').scrollIntoView({
         behavior: 'smooth',
         block: 'start'
@@ -436,18 +436,21 @@ function scrollToForm() {
     setTimeout(() => {
         form.style.boxShadow = '0 20px 40px rgba(0,0,0,0.1)';
     }, 2000);
-}
+};
 
 // Открытие модального окна статистики
-function openStatsModal() {
+window.openStatsModal = function() {
     document.getElementById('statsModal').classList.add('active');
     loadStats();
-}
+};
 
 // Закрытие модального окна статистики
-function closeStatsModal() {
+window.closeStatsModal = function() {
     document.getElementById('statsModal').classList.remove('active');
-}
+};
+
+// Экспорт данных делаем глобальным
+window.exportData = exportData;
 
 // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 
@@ -547,4 +550,4 @@ window.onclick = function(event) {
     if (event.target === statsModal) {
         closeStatsModal();
     }
-}
+};

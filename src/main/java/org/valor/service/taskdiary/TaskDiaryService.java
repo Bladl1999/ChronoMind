@@ -11,7 +11,7 @@ import java.util.UUID;
 @Service
 public interface TaskDiaryService {
 
-    List<TaskDiaryDto> getAllTaskDiary(Pageable pageable);
+    List<TaskDiaryDto> getAllTaskDiary(String date, Pageable pageable);
 
     TaskDiaryDto getByTaskDiaryById(UUID id);
 
@@ -20,4 +20,6 @@ public interface TaskDiaryService {
     UUID updateTaskDiary(UUID id, TaskDiaryUpdateRequest request);
 
     UUID deleteTaskDiary(UUID id);
+
+    TaskDiaryDto getByTaskDiaryByData(String date);
 }

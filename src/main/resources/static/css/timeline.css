@@ -1,0 +1,307 @@
+/* ========== УПРАВЛЕНИЕ ДАТОЙ ========== */
+.timeline-controls {
+    background: white;
+    border-radius: var(--border-radius-xl);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.date-nav-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-family: inherit;
+}
+
+.date-nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.current-date {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f0f3ff;
+    padding: 8px 20px;
+    border-radius: 40px;
+}
+
+.date-icon {
+    font-size: 1.2rem;
+}
+
+#timelineDate {
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#timelineDate:focus {
+    outline: none;
+}
+
+.today-btn {
+    background: var(--success-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-family: inherit;
+}
+
+.today-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    background: #45a049;
+}
+
+/* ========== КОНТЕЙНЕР ШКАЛЫ ========== */
+.timeline-container {
+    background: white;
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: fadeInUp 0.5s ease;
+}
+
+.timeline-header {
+    display: flex;
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.timeline-time-col {
+    width: 100px;
+    padding: 16px;
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.timeline-tasks-col {
+    flex: 1;
+    padding: 16px;
+    text-align: center;
+}
+
+.timeline-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* ========== СТРОКИ ВРЕМЕНИ ========== */
+.timeline-row {
+    display: flex;
+    border-bottom: 1px solid var(--border-light);
+    transition: var(--transition-base);
+    min-height: 70px;
+}
+
+.timeline-row:hover {
+    background: #fafbff;
+}
+
+.timeline-time-slot {
+    width: 100px;
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--text-primary);
+    border-right: 1px solid var(--border-light);
+    background: #fafafa;
+    font-size: 0.85rem;
+}
+
+.timeline-tasks-slot {
+    flex: 1;
+    padding: 8px;
+    position: relative;
+    min-height: 70px;
+}
+
+/* ========== КАРТОЧКИ ЗАДАЧ ========== */
+.timeline-task-card {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f3ff 100%);
+    border-left: 4px solid var(--primary-color);
+    border-radius: var(--border-radius-sm);
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.timeline-task-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-md);
+}
+
+.timeline-task-card.priority-low {
+    border-left-color: var(--success-color);
+    background: linear-gradient(135deg, #f0fff0 0%, #e8f5e8 100%);
+}
+
+.timeline-task-card.priority-medium {
+    border-left-color: var(--warning-color);
+    background: linear-gradient(135deg, #fff8f0 0%, #fff3e0 100%);
+}
+
+.timeline-task-card.priority-high {
+    border-left-color: var(--danger-color);
+    background: linear-gradient(135deg, #fff0f0 0%, #ffebee 100%);
+}
+
+.task-card-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.task-card-time {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.task-card-time span {
+    font-size: 0.8rem;
+}
+
+.task-card-priority {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+/* ========== ИНДИКАТОР ТЕКУЩЕГО ВРЕМЕНИ ========== */
+.current-time-indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--danger-color);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.current-time-indicator::before {
+    content: "●";
+    position: absolute;
+    left: -6px;
+    top: -5px;
+    color: var(--danger-color);
+    font-size: 12px;
+}
+
+/* ========== ПУСТЫЕ СОСТОЯНИЯ ========== */
+.empty-timeline {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-timeline-icon {
+    font-size: 4rem;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-timeline-text {
+    font-size: 1rem;
+}
+
+/* ========== АДАПТАЦИЯ ========== */
+@media (max-width: 768px) {
+    .timeline-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .date-nav-btn,
+    .today-btn {
+        justify-content: center;
+    }
+
+    .current-date {
+        justify-content: center;
+    }
+
+    .timeline-time-col,
+    .timeline-time-slot {
+        width: 70px;
+        font-size: 0.75rem;
+    }
+
+    .timeline-time-slot {
+        padding: 8px 4px;
+    }
+
+    .task-card-title {
+        font-size: 0.8rem;
+    }
+
+    .task-card-time {
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .timeline-time-col,
+    .timeline-time-slot {
+        width: 60px;
+        font-size: 0.7rem;
+    }
+
+    .timeline-task-card {
+        padding: 6px 8px;
+    }
+
+    .task-card-title {
+        font-size: 0.75rem;
+    }
+}
+
+/* ========== АНИМАЦИИ ========== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.timeline-row {
+    animation: slideIn 0.3s ease;
+}

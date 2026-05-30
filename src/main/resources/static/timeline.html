@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="description" content="Временная шкала - визуальное планирование дня">
+    <meta name="theme-color" content="#667eea">
+    <title>Временная шкала | Мой Ежедневник</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/timeline.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <!-- Шапка с навигацией (такая же как на главной) -->
+    <header class="header" role="banner">
+        <div class="header-title">
+            <span class="header-icon">📔</span>
+            <span>Мой Ежедневник</span>
+        </div>
+
+        <nav class="nav-menu" role="navigation" aria-label="Главная навигация">
+            <a href="timeline.html" class="nav-item active">
+                <span aria-hidden="true">📅</span>
+                <span>Временная шкала</span>
+            </a>
+
+            <button class="ai-badge" onclick="openAIDialog()" aria-label="Открыть ИИ помощника">
+                <span aria-hidden="true">🤖</span>
+                <span>ИИ-Помощник</span>
+            </button>
+
+            <a href="index.html" class="nav-item">
+                <span aria-hidden="true">📋</span>
+                <span>Все записи</span>
+            </a>
+
+            <button class="nav-item" onclick="openStatsModal()" aria-label="Статистика">
+                <span aria-hidden="true">📊</span>
+                <span>Статистика</span>
+            </button>
+
+            <a href="index.html#createForm" class="create-header-btn">
+                <span aria-hidden="true">➕</span>
+                <span>Создать запись</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Управление датой -->
+    <div class="timeline-controls">
+        <button class="date-nav-btn" onclick="changeDate(-1)" aria-label="Предыдущий день">
+            ← Вчера
+        </button>
+        <div class="current-date">
+            <span class="date-icon">📅</span>
+            <input type="date" id="timelineDate" onchange="loadTimeline()">
+        </div>
+        <button class="date-nav-btn" onclick="changeDate(1)" aria-label="Следующий день">
+            Завтра →
+        </button>
+        <button class="today-btn" onclick="goToToday()">
+            📍 Сегодня
+        </button>
+    </div>
+
+    <!-- Временная шкала -->
+    <div class="timeline-container">
+        <div class="timeline-header">
+            <div class="timeline-time-col">Время</div>
+            <div class="timeline-tasks-col">Задачи</div>
+        </div>
+        <div class="timeline-body" id="timelineBody">
+            <!-- Сюда будет генерироваться временная шкала -->
+            <div class="loading-skeleton">
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+                <div class="skeleton-item"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно ИИ-помощника -->
+<div class="modal" id="aiModal" role="dialog" aria-modal="true" aria-label="ИИ помощник">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <span aria-hidden="true">🤖</span>
+                <span>ИИ-Помощник</span>
+            </h3>
+            <button class="close-modal" onclick="closeAIDialog()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="ai-message">
+                <div class="ai-avatar" aria-hidden="true">🤖</div>
+                <div class="ai-text">
+                    <p>Привет! Я ваш ИИ-помощник. Я могу помочь вам с:</p>
+                    <ul>
+                        <li>Планированием задач</li>
+                        <li>Анализом продуктивности</li>
+                        <li>Советами по организации времени</li>
+                        <li>Созданием шаблонов задач</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ai-input-group">
+                <label for="aiPrompt">💭 Задайте вопрос или получите совет</label>
+                <textarea id="aiPrompt" placeholder="Например: Помоги распланировать мой день..." rows="3"></textarea>
+                <button class="ai-send-btn" onclick="sendToAI()">
+                    <span>🚀</span>
+                    <span>Отправить</span>
+                </button>
+            </div>
+
+            <div class="ai-suggestions">
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Как лучше организовать свой день?')">Как лучше организовать день?</button>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Какие задачи сделать приоритетными?')">Приоритеты задач</button>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Совет для продуктивной работы')">Продуктивность</button>
+                <button class="ai-suggestion-chip" onclick="useSuggestion('Шаблон для ежедневных задач')">Шаблон задач</button>
+            </div>
+
+            <div id="aiResponse" class="ai-response" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно статистики -->
+<div class="modal" id="statsModal" role="dialog" aria-modal="true" aria-label="Статистика продуктивности">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3>
+                <span aria-hidden="true">📊</span>
+                <span>Статистика продуктивности</span>
+            </h3>
+            <button class="close-modal" onclick="closeStatsModal()">×</button>
+        </div>
+        <div class="modal-body" id="statsContent">
+            <div class="stats-loading">
+                <div class="spinner"></div>
+                <p>Загрузка статистики...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно просмотра/редактирования задачи -->
+<div class="modal" id="taskModal" role="dialog" aria-modal="true" aria-label="Просмотр задачи">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <span aria-hidden="true">📋</span>
+                <span>Просмотр задачи</span>
+            </h3>
+            <button class="close-modal" onclick="closeTaskModal()">×</button>
+        </div>
+        <div class="modal-body" id="taskModalContent">
+            <!-- Содержимое задачи будет здесь -->
+        </div>
+    </div>
+</div>
+
+<!-- Контейнер для уведомлений -->
+<div id="notification" aria-live="polite" role="status"></div>
+
+<script src="js/app.js" defer></script>
+<script src="js/timeline.js" defer></script>
+</body>
+</html>
