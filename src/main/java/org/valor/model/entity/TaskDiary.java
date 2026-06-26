@@ -1,19 +1,17 @@
 package org.valor.model.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import org.valor.enums.PriorityTaskEnum;
 import org.valor.model.dto.TaskDiaryDto;
 import org.valor.model.dto.TaskDiaryUpdateRequest;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Entity
 @Table(name = "task_diary")
-public class TaskDiary {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class TaskDiary extends BaseEntity {
     @Column(name = "name")
     private String name;
     @Column(name = "task_note")
@@ -24,14 +22,6 @@ public class TaskDiary {
     private Instant starTask;
     @Column(name = "finish_task")
     private Instant finishTask;
-    @Column(name = "deleted")
-    private Short deleted = 0;
-    @Column(name = "create_timestamp")
-    private Instant createTimestamp = Instant.now();
-    @Column(name = "update_timestamp")
-    private Instant updateTimestamp = Instant.now();
-    @Column(name = "deleted_timestamp")
-    private Instant deleteTimestamp;
 
     public TaskDiary() {
     }
@@ -50,16 +40,8 @@ public class TaskDiary {
         request.priority().ifPresent(this::setPriority);
         request.starTask().ifPresent(this::setStarTask);
         request.finishTask().ifPresent(this::setFinishTask);
-        this.updateTimestamp = Instant.now();
+        setUpdateTimestamp(Instant.now());
         return this;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -104,37 +86,5 @@ public class TaskDiary {
 
     public void setFinishTask(Instant finishTask) {
         this.finishTask = finishTask;
-    }
-
-    public Short getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Short deleted) {
-        this.deleted = deleted;
-    }
-
-    public Instant getCreateTimestamp() {
-        return createTimestamp;
-    }
-
-    public void setCreateTimestamp(Instant createTimestamp) {
-        this.createTimestamp = createTimestamp;
-    }
-
-    public Instant getUpdateTimestamp() {
-        return updateTimestamp;
-    }
-
-    public void setUpdateTimestamp(Instant updateTimestamp) {
-        this.updateTimestamp = updateTimestamp;
-    }
-
-    public Instant getDeleteTimestamp() {
-        return deleteTimestamp;
-    }
-
-    public void setDeleteTimestamp(Instant deleteTimestamp) {
-        this.deleteTimestamp = deleteTimestamp;
     }
 }

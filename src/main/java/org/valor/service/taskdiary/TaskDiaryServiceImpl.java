@@ -60,6 +60,11 @@ public class TaskDiaryServiceImpl implements TaskDiaryService {
 
     @Override
     public UUID deleteTaskDiary(UUID id) {
-        return repository.safeDelete(id, Instant.now(), Instant.now().toString());
+        TaskDiary taskDiary = repository.findById(id).orElseThrow(() -> new RuntimeException("Задача не найдена"));
+        Instant deleteTimeStamp = Instant.now();
+        taskDiary.setDeleted(true);
+        taskDiary.setDeleteTimestamp(deleteTimeStamp);
+        taskDiary.setName(String.format("[ %s %s ]", taskDiary.getName(), deleteTimeStamp.toString()));
+        return taskDiary.getId();
     }
 }
