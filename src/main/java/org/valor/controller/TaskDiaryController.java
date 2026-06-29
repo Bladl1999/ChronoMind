@@ -26,13 +26,17 @@ public class TaskDiaryController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskDiaryDto>> getAllTaskDiary(@RequestParam("date") String date, Pageable pageable){
-        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary(date, pageable);
+    public ResponseEntity<List<TaskDiaryDto>> getAllTaskDiary( Pageable pageable){
+        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary(null, pageable);
         return ResponseEntity.ok(taskDiary);
     }
 
 
-//    @GetMapping("/timeline")
+    @GetMapping("/timeline")
+    public ResponseEntity<List<TaskDiaryDto>> timeLine( Pageable pageable) {
+        List<TaskDiaryDto> taskDiary = service.getAllTaskDiary(null, pageable);
+        return ResponseEntity.ok(taskDiary);
+    }
 
 
     @GetMapping("/{id}")
