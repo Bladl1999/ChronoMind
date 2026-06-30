@@ -22,4 +22,6 @@ public interface TaskDiaryService {
     UUID deleteTaskDiary(UUID id);
 
     TaskDiaryDto getByTaskDiaryByData(String date);
+
+    List<TaskDiaryDto> search(String query);
 }

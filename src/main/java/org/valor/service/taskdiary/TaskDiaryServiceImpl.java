@@ -67,4 +67,11 @@ public class TaskDiaryServiceImpl implements TaskDiaryService {
         taskDiary.setName(String.format("[ %s %s ]", taskDiary.getName(), deleteTimeStamp.toString()));
         return taskDiary.getId();
     }
+
+    @Override
+    public List<TaskDiaryDto> search(String query) {
+        return repository.search(query).stream()
+                .map(TaskDiaryDto::fromEntity)
+                .toList();
+    }
 }
