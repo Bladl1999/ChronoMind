@@ -38,6 +38,12 @@ public class TaskDiaryController {
         return ResponseEntity.ok(taskDiary);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<TaskDiaryDto>> search( @RequestParam("q") String query) {
+        List<TaskDiaryDto> taskDiary = service.search(query);
+        return ResponseEntity.ok(null);
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskDiaryDto> getByTaskDiaryById(@PathVariable UUID id){
