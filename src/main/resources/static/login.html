@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход – Тайм-менеджер</title>
+    <style>
+        /* ----- Переменные (единый стиль) ----- */
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-input: #f0f2f5;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.1);
+            --primary: #1976d2;
+            --primary-light: #e3f0ff;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+
+        body.dark {
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --bg-input: #2d2d2d;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.5);
+            --primary-light: #1a2a4a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: background var(--transition), color var(--transition);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 420px;
+            transition: background var(--transition), box-shadow var(--transition);
+        }
+
+        .login-card .logo {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .login-card .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .login-card .field {
+            margin-bottom: 18px;
+        }
+
+        .login-card .field label {
+            display: block;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .login-card .field input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border var(--transition), background var(--transition);
+        }
+
+        .login-card .field input:focus {
+            border-color: var(--primary);
+        }
+
+        .login-card .btn-primary {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 30px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background var(--transition);
+        }
+
+        .login-card .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .login-card .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .login-card .error-msg {
+            color: var(--danger);
+            font-size: 14px;
+            text-align: center;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        .login-card .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .login-card .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--transition);
+        }
+
+        .login-card .footer-links a:hover {
+            color: #1565c0;
+            text-decoration: underline;
+        }
+
+        .theme-toggle-wrapper {
+            position: fixed;
+            top: 16px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .theme-toggle-wrapper button {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: background var(--transition), border var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle-wrapper button:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 20px;
+            }
+            .login-card .logo {
+                font-size: 28px;
+            }
+            .theme-toggle-wrapper {
+                top: 12px;
+                right: 12px;
+            }
+            .theme-toggle-wrapper button {
+                padding: 6px 12px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Кнопка переключения темы -->
+<div class="theme-toggle-wrapper">
+    <button id="themeToggle" title="Переключить тему">🌙</button>
+</div>
+
+<!-- Карточка входа -->
+<div class="login-card">
+    <div class="logo">⏳ TaskFlow</div>
+    <div class="subtitle">Войдите в свой аккаунт</div>
+
+    <form id="loginForm">
+        <div class="field">
+            <label for="loginInput">Логин или email</label>
+            <input type="text" id="loginInput" placeholder="Введите логин или email" required autofocus>
+        </div>
+        <div class="field">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-primary" id="loginBtn">Войти</button>
+        <div class="error-msg" id="errorMsg"></div>
+    </form>
+
+    <div class="footer-links">
+        <a href="#" id="forgotLink">Забыли пароль?</a>
+        <a href="#" id="registerLink">Регистрация</a>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- Тема -----
+        const body = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark');
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            } else if (theme === 'light') {
+                body.classList.remove('dark');
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                localStorage.removeItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    body.classList.add('dark');
+                    themeToggle.textContent = '☀️';
+                } else {
+                    body.classList.remove('dark');
+                    themeToggle.textContent = '🌙';
+                }
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme || 'system');
+
+        themeToggle.addEventListener('click', () => {
+            const current = localStorage.getItem('theme') || 'system';
+            if (current === 'light') applyTheme('dark');
+            else if (current === 'dark') applyTheme('system');
+            else applyTheme('light');
+        });
+
+        // ----- Логика входа -----
+        const form = document.getElementById('loginForm');
+        const loginInput = document.getElementById('loginInput');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginBtn');
+        const errorMsg = document.getElementById('errorMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.textContent = '';
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Вход...';
+
+            const loginOrEmail = loginInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!loginOrEmail || !password) {
+                errorMsg.textContent = 'Заполните все поля';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Войти';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: loginOrEmail,  // отправляем как email, бэкенд должен уметь принимать логин
+                        password
+                    })
+                });
+
+                if (!response.ok) {
+                    let errMsg = 'Неверный логин или пароль';
+                    try {
+                        const errData = await response.json();
+                        if (errData.message) errMsg = errData.message;
+                    } catch (_) {}
+                    errorMsg.textContent = errMsg;
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Войти';
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.token) {
+                    localStorage.setItem('jwtToken', data.token);
+                    window.location.href = '/tasks.html';
+                } else {
+                    errorMsg.textContent = 'Ошибка: токен не получен';
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Войти';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Ошибка соединения с сервером';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Войти';
+            }
+        });
+
+        // ----- Заглушки -----
+        document.getElementById('forgotLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Восстановление пароля будет доступно позже.');
+        });
+        document.getElementById('registerLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Регистрация будет доступна позже.');
+        });
+    })();
+</script>
+</body>
+</html>

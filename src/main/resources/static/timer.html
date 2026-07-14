@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймер – Тайм-менеджер</title>
+    <style>
+        /* ----- Единые переменные ----- */
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-input: #f0f2f5;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.1);
+            --primary: #1976d2;
+            --primary-light: #e3f0ff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #22c55e;
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+        body.dark {
+            --bg-body: #121212;
+            --bg-sidebar: #1e1e1e;
+            --bg-card: #1e1e1e;
+            --bg-header: #1e1e1e;
+            --bg-input: #2d2d2d;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.5);
+            --primary-light: #1a2a4a;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { background:var(--bg-body); color:var(--text-primary); transition: background var(--transition), color var(--transition); display:flex; min-height:100vh; }
+
+        /* ----- Sidebar ----- */
+        .sidebar {
+            width:260px; background:var(--bg-sidebar); border-right:1px solid var(--border-color);
+            padding:24px 20px; display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+            transition: background var(--transition), border var(--transition); flex-shrink:0;
+        }
+        .sidebar .logo { font-size:24px; font-weight:700; color:var(--primary); margin-bottom:40px; display:flex; align-items:center; gap:10px; }
+        .sidebar nav { display:flex; flex-direction:column; gap:6px; flex:1; }
+        .sidebar nav a { display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; color:var(--text-secondary); text-decoration:none; font-weight:500; transition:background var(--transition), color var(--transition); cursor:pointer; }
+        .sidebar nav a:hover { background:var(--primary-light); color:var(--primary); }
+        .sidebar nav a.active { background:var(--primary); color:#fff; }
+        .sidebar .user { border-top:1px solid var(--border-color); padding-top:20px; margin-top:10px; display:flex; align-items:center; gap:12px; }
+        .sidebar .user .avatar { width:40px; height:40px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:18px; }
+        .sidebar .user .name { font-weight:500; font-size:14px; }
+        .sidebar .user .email { font-size:12px; color:var(--text-muted); }
+
+        /* ----- Main ----- */
+        .main { flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+        /* ----- Header ----- */
+        .header {
+            background:var(--bg-header); padding:16px 32px; border-bottom:1px solid var(--border-color);
+            display:flex; align-items:center; justify-content:space-between; transition: background var(--transition), border var(--transition);
+            flex-wrap:wrap; gap:12px;
+        }
+        .header-left { display:flex; align-items:center; gap:16px; }
+        .header-left .menu-icon { display:none; font-size:28px; cursor:pointer; color:var(--text-primary); }
+        .header .search { background:var(--bg-input); border-radius:40px; padding:8px 18px; display:flex; align-items:center; gap:10px; border:1px solid transparent; transition:border var(--transition), background var(--transition); min-width:240px; }
+        .header .search:focus-within { border-color:var(--primary); background:var(--bg-card); }
+        .header .search input { background:transparent; border:none; outline:none; color:var(--text-primary); font-size:14px; width:100%; }
+        .header .search input::placeholder { color:var(--text-muted); }
+        .header-actions { display:flex; align-items:center; gap:16px; }
+        .header-actions .icon-btn { background:transparent; border:none; font-size:24px; cursor:pointer; color:var(--text-secondary); transition:color var(--transition); }
+        .header-actions .icon-btn:hover { color:var(--primary); }
+        .header-actions .theme-toggle { font-size:22px; }
+
+        /* ----- Content (таймер) ----- */
+        .content { padding:32px; flex:1; }
+
+        .timer-wrapper {
+            display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start;
+        }
+
+        /* Левая колонка */
+        .timer-card {
+            background:var(--bg-card); border-radius:var(--radius); padding:32px;
+            box-shadow:var(--shadow); transition:background var(--transition), box-shadow var(--transition);
+            display:flex; flex-direction:column; align-items:center;
+        }
+        .timer-display {
+            position:relative; width:220px; height:220px; margin-bottom:24px;
+        }
+        .timer-display svg { transform:rotate(-90deg); }
+        .timer-display .bg { fill:none; stroke:var(--border-color); stroke-width:8; }
+        .timer-display .progress { fill:none; stroke:var(--primary); stroke-width:8; stroke-linecap:round; transition:stroke-dashoffset 0.3s ease; }
+        .timer-display .time-text {
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+            font-size:38px; font-weight:700; color:var(--text-primary); letter-spacing:2px;
+        }
+
+        .timer-controls { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
+        .timer-controls button {
+            padding:10px 28px; border-radius:40px; border:none; font-weight:600; font-size:16px;
+            cursor:pointer; transition:background var(--transition), transform var(--transition);
+            background:var(--bg-input); color:var(--text-primary);
+        }
+        .timer-controls button:hover { transform:scale(1.03); }
+        .timer-controls .btn-start { background:var(--primary); color:#fff; }
+        .timer-controls .btn-start:hover { background:#1565c0; }
+        .timer-controls .btn-pause { background:var(--warning); color:#fff; }
+        .timer-controls .btn-pause:hover { background:#d97706; }
+        .timer-controls .btn-stop { background:var(--danger); color:#fff; }
+        .timer-controls .btn-stop:hover { background:#dc2626; }
+        .timer-controls .btn-reset { background:var(--text-muted); color:#fff; }
+        .timer-controls .btn-reset:hover { background:var(--text-secondary); }
+
+        .timer-status { font-size:14px; color:var(--text-secondary); margin-bottom:8px; }
+        .timer-task-select {
+            width:100%; max-width:300px; padding:8px 14px; border-radius:40px;
+            border:1px solid var(--border-color); background:var(--bg-input); color:var(--text-primary);
+            font-size:14px; outline:none; transition:border var(--transition);
+        }
+        .timer-task-select:focus { border-color:var(--primary); }
+
+        /* Правая колонка */
+        .settings-card {
+            background:var(--bg-card); border-radius:var(--radius); padding:24px;
+            box-shadow:var(--shadow); transition:background var(--transition), box-shadow var(--transition);
+        }
+        .settings-card h3 { margin-bottom:16px; font-weight:600; font-size:18px; }
+        .setting-group {
+            display:flex; align-items:center; justify-content:space-between; padding:10px 0;
+            border-bottom:1px solid var(--border-color);
+        }
+        .setting-group:last-child { border-bottom:none; }
+        .setting-group label { font-size:14px; font-weight:500; }
+        .setting-group input[type="number"] {
+            width:70px; padding:6px 10px; border-radius:30px; border:1px solid var(--border-color);
+            background:var(--bg-input); color:var(--text-primary); text-align:center; font-size:14px; outline:none;
+            transition:border var(--transition);
+        }
+        .setting-group input[type="number"]:focus { border-color:var(--primary); }
+
+        .history-list { margin-top:16px; max-height:250px; overflow-y:auto; }
+        .history-item {
+            display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border-color);
+            font-size:14px;
+        }
+        .history-item:last-child { border-bottom:none; }
+        .history-item .task-name { font-weight:500; }
+        .history-item .time { color:var(--text-secondary); }
+
+        .empty-history { color:var(--text-muted); font-size:14px; text-align:center; padding:20px 0; }
+
+        .pagination-history {
+            display:flex; justify-content:center; gap:8px; margin-top:12px;
+        }
+        .pagination-history button {
+            background:var(--bg-input); border:1px solid var(--border-color); border-radius:20px;
+            padding:4px 12px; cursor:pointer; font-size:13px; transition:background var(--transition);
+        }
+        .pagination-history button:hover:not(:disabled) { background:var(--primary-light); }
+        .pagination-history button:disabled { opacity:0.4; cursor:not-allowed; }
+
+        /* ----- Уведомления (toast) ----- */
+        .toast {
+            position:fixed; bottom:20px; right:20px; background:var(--bg-card); padding:12px 24px;
+            border-radius:12px; box-shadow:var(--shadow-hover); border-left:4px solid var(--primary);
+            z-index:9999; transition:all 0.3s; max-width:400px;
+        }
+        .toast.error { border-left-color:var(--danger); }
+
+        /* ----- Адаптив ----- */
+        @media (max-width:1024px) {
+            .timer-wrapper { grid-template-columns:1fr; }
+        }
+        @media (max-width:768px) {
+            .sidebar { position:fixed; left:-280px; top:0; height:100vh; z-index:1000; transition:left 0.3s ease; box-shadow:4px 0 20px rgba(0,0,0,0.1); }
+            .sidebar.open { left:0; }
+            .header-left .menu-icon { display:block; }
+            .header .search { min-width:140px; flex:1; }
+            .content { padding:20px; }
+            .timer-display { width:180px; height:180px; }
+            .timer-display .time-text { font-size:30px; }
+        }
+        @media (max-width:480px) {
+            .header { padding:12px 16px; }
+            .timer-controls button { padding:8px 18px; font-size:14px; }
+            .timer-display { width:150px; height:150px; }
+            .timer-display .time-text { font-size:26px; }
+        }
+        .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:999; }
+        .sidebar-overlay.active { display:block; }
+        .loading { text-align:center; padding:20px; color:var(--text-secondary); }
+        .error-msg { color:var(--danger); text-align:center; padding:20px; }
+    </style>
+</head>
+<body>
+<!-- Мобильное меню overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="logo">⏳ TaskFlow</div>
+    <nav>
+        <a href="#">📋 Задачи</a>
+        <a href="#">📅 Календарь</a>
+        <a href="#" class="active">⏱ Таймер</a>
+        <a href="#">📊 Статистика</a>
+        <a href="#">⚙️ Настройки</a>
+    </nav>
+    <div class="user">
+        <div class="avatar">А</div>
+        <div>
+            <div class="name">Алексей</div>
+            <div class="email">alex@example.com</div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <span class="menu-icon" id="menuToggle">☰</span>
+            <div class="search">
+                <span>🔍</span>
+                <input type="text" id="globalSearch" placeholder="Поиск задач..." />
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" title="Уведомления">🔔</button>
+            <button class="icon-btn theme-toggle" id="themeToggle" title="Переключить тему">🌙</button>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+        <h1 style="margin-bottom:24px;">⏱ Pomodoro Таймер</h1>
+
+        <div class="timer-wrapper">
+            <!-- Левая колонка: таймер -->
+            <div class="timer-card">
+                <div class="timer-display">
+                    <svg width="220" height="220" viewBox="0 0 220 220">
+                        <circle class="bg" cx="110" cy="110" r="90" />
+                        <circle class="progress" cx="110" cy="110" r="90" id="timerCircle" />
+                    </svg>
+                    <div class="time-text" id="timerDisplay">25:00</div>
+                </div>
+
+                <div class="timer-status" id="timerStatus">⏸ Готов к работе</div>
+
+                <div class="timer-controls">
+                    <button class="btn-start" id="startBtn">▶ Старт</button>
+                    <button class="btn-pause" id="pauseBtn" disabled>⏸ Пауза</button>
+                    <button class="btn-stop" id="stopBtn" disabled>⏹ Стоп</button>
+                    <button class="btn-reset" id="resetBtn">↺ Сброс</button>
+                </div>
+
+                <select class="timer-task-select" id="taskSelect">
+                    <option value="">Выберите задачу...</option>
+                </select>
+            </div>
+
+            <!-- Правая колонка: настройки и история -->
+            <div class="settings-card">
+                <h3>⚙️ Настройки интервалов</h3>
+                <div class="setting-group">
+                    <label>Работа (мин)</label>
+                    <input type="number" id="workDuration" value="25" min="1" max="60">
+                </div>
+                <div class="setting-group">
+                    <label>Короткий перерыв (мин)</label>
+                    <input type="number" id="shortBreak" value="5" min="1" max="30">
+                </div>
+                <div class="setting-group">
+                    <label>Длинный перерыв (мин)</label>
+                    <input type="number" id="longBreak" value="15" min="1" max="45">
+                </div>
+                <div class="setting-group">
+                    <label>Количество сессий до длинного перерыва</label>
+                    <input type="number" id="sessionsBeforeLong" value="4" min="1" max="10">
+                </div>
+                <button class="btn-primary" id="saveSettingsBtn" style="margin-top:12px; padding:8px 20px; border-radius:30px; border:none; background:var(--primary); color:#fff; font-weight:600; cursor:pointer;">Сохранить настройки</button>
+
+                <h3 style="margin-top:24px;">📋 История сессий</h3>
+                <div class="history-list" id="historyList">
+                    <div class="empty-history">Загрузка...</div>
+                </div>
+                <div class="pagination-history" id="historyPagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- БАЗОВЫЙ URL И ТОКЕН ----------
+        const API_BASE = 'http://localhost:8080/api/v1';
+        let token = localStorage.getItem('jwtToken');
+        if (!token) {
+            alert('Вы не авторизованы. Перенаправление на страницу входа.');
+            window.location.href = '/login.html';
+        }
+
+        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+        function getHeaders() {
+            return {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function handleResponse(response) {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('jwtToken');
+                    alert('Сессия истекла. Войдите заново.');
+                    window.location.href = '/login.html';
+                    return Promise.reject('Unauthorized');
+                }
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Ошибка сервера');
+                });
+            }
+            return response.json();
+        }
+
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const div = document.createElement('div');
+            div.className = 'toast' + (isError ? ' error' : '');
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        // ---------- API ВЫЗОВЫ ----------
+        const api = {
+            // Сохранение сессии
+            async saveSession(data) {
+                const url = `${API_BASE}/timer/sessions`;
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify(data)
+                });
+                return handleResponse(resp);
+            },
+
+            // Получение истории с пагинацией
+            async getSessions(page = 0, size = 10, type = null, from = null, to = null) {
+                const params = new URLSearchParams({ page, size });
+                if (type) params.append('type', type);
+                if (from) params.append('from', from);
+                if (to) params.append('to', to);
+                const url = `${API_BASE}/timer/sessions?${params}`;
+                const resp = await fetch(url, { headers: getHeaders() });
+                return handleResponse(resp);
+            },
+
+            // Получение настроек
+            async getSettings() {
+                const url = `${API_BASE}/timer/settings`;
+                const resp = await fetch(url, { headers: getHeaders() });
+                return handleResponse(resp);
+            },
+
+            // Обновление настроек
+            async updateSettings(data) {
+                const url = `${API_BASE}/timer/settings`;
+                const resp = await fetch(url, {
+                    method: 'PUT',
+                    headers: getHeaders(),
+                    body: JSON.stringify(data)
+                });
+                return handleResponse(resp);
+            },
+
+            // Получение задач для выбора (для привязки сессии)
+            async getTasks() {
+                const url = `${API_BASE}/tasks?size=100`; // упрощённо без пагинации
+                const resp = await fetch(url, { headers: getHeaders() });
+                return handleResponse(resp);
+            }
+        };
+
+        // ---------- DOM ЭЛЕМЕНТЫ ----------
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerCircle = document.getElementById('timerCircle');
+        const timerStatus = document.getElementById('timerStatus');
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const taskSelect = document.getElementById('taskSelect');
+        const historyList = document.getElementById('historyList');
+        const historyPagination = document.getElementById('historyPagination');
+
+        const workInput = document.getElementById('workDuration');
+        const shortInput = document.getElementById('shortBreak');
+        const longInput = document.getElementById('longBreak');
+        const sessionsBeforeLongInput = document.getElementById('sessionsBeforeLong');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+
+        // ---------- СОСТОЯНИЕ ТАЙМЕРА ----------
+        const CIRCUMFERENCE = 2 * Math.PI * 90;
+        let timer = null;
+        let remainingSeconds = 25 * 60;
+        let totalSeconds = 25 * 60;
+        let isRunning = false;
+        let isPaused = false;
+        let currentMode = 'work'; // 'work', 'shortBreak', 'longBreak'
+        let sessionCount = 0;
+        // Переменные для сохранения сессии
+        let currentTaskId = null;
+        let sessionStartTime = null;
+        let sessionDuration = 0;
+
+        // ---------- ЗАГРУЗКА НАСТРОЕК ----------
+        async function loadSettings() {
+            try {
+                const settings = await api.getSettings();
+                workInput.value = settings.workDurationMinutes || 25;
+                shortInput.value = settings.shortBreakMinutes || 5;
+                longInput.value = settings.longBreakMinutes || 15;
+                sessionsBeforeLongInput.value = settings.sessionsBeforeLong || 4;
+                // Применяем настройки к таймеру
+                setMode('work');
+            } catch (e) {
+                showToast('Ошибка загрузки настроек: ' + e.message, true);
+            }
+        }
+
+        // ---------- ЗАГРУЗКА ЗАДАЧ ДЛЯ ВЫБОРА ----------
+        async function loadTasksForSelect() {
+            try {
+                const result = await api.getTasks();
+                const tasks = result.content || [];
+                taskSelect.innerHTML = '<option value="">Выберите задачу...</option>';
+                tasks.forEach(task => {
+                    taskSelect.innerHTML += `<option value="${task.id}">${task.title}</option>`;
+                });
+            } catch (e) {
+                showToast('Ошибка загрузки задач: ' + e.message, true);
+            }
+        }
+
+        // ---------- ИСТОРИЯ СЕССИЙ ----------
+        let historyPage = 0;
+        const historySize = 10;
+        let totalHistoryPages = 0;
+
+        async function loadHistory(page = 0) {
+            try {
+                historyList.innerHTML = '<div class="loading">Загрузка...</div>';
+                const result = await api.getSessions(page, historySize);
+                const sessions = result.content || [];
+                totalHistoryPages = result.totalPages || 0;
+                historyPage = page;
+
+                if (sessions.length === 0) {
+                    historyList.innerHTML = '<div class="empty-history">Нет завершённых сессий</div>';
+                } else {
+                    let html = '';
+                    sessions.forEach(s => {
+                        const taskName = s.taskName || 'Без задачи';
+                        const duration = s.durationMinutes || 0;
+                        const time = s.completedAt ? new Date(s.completedAt).toLocaleString('ru-RU', { hour:'2-digit', minute:'2-digit' }) : '';
+                        html += `<div class="history-item">
+                                    <span class="task-name">${taskName}</span>
+                                    <span class="time">${duration} мин (${time})</span>
+                                </div>`;
+                    });
+                    historyList.innerHTML = html;
+                }
+                renderHistoryPagination();
+            } catch (e) {
+                historyList.innerHTML = `<div class="error-msg">Ошибка загрузки истории: ${e.message}</div>`;
+            }
+        }
+
+        function renderHistoryPagination() {
+            if (totalHistoryPages <= 1) {
+                historyPagination.innerHTML = '';
+                return;
+            }
+            let html = '';
+            html += `<button ${historyPage === 0 ? 'disabled' : ''} data-page="${historyPage-1}">◀</button>`;
+            for (let i = 0; i < totalHistoryPages; i++) {
+                html += `<button class="${i === historyPage ? 'active' : ''}" data-page="${i}">${i+1}</button>`;
+            }
+            html += `<button ${historyPage === totalHistoryPages-1 ? 'disabled' : ''} data-page="${historyPage+1}">▶</button>`;
+            historyPagination.innerHTML = html;
+            historyPagination.querySelectorAll('button[data-page]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = Number(this.dataset.page);
+                    if (!isNaN(page) && page >= 0 && page < totalHistoryPages) {
+                        loadHistory(page);
+                    }
+                });
+            });
+        }
+
+        // ---------- ФУНКЦИИ ТАЙМЕРА ----------
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updateDisplay() {
+            timerDisplay.textContent = formatTime(remainingSeconds);
+            const progress = (totalSeconds - remainingSeconds) / totalSeconds;
+            const offset = CIRCUMFERENCE * (1 - progress);
+            timerCircle.style.strokeDasharray = CIRCUMFERENCE;
+            timerCircle.style.strokeDashoffset = offset;
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            let duration = 0;
+            switch(mode) {
+                case 'work': duration = parseInt(workInput.value) * 60; break;
+                case 'shortBreak': duration = parseInt(shortInput.value) * 60; break;
+                case 'longBreak': duration = parseInt(longInput.value) * 60; break;
+            }
+            totalSeconds = duration;
+            remainingSeconds = duration;
+            updateDisplay();
+            timerStatus.textContent = mode === 'work' ? '🍅 Работа' : '☕ Перерыв';
+            timerCircle.style.stroke = mode === 'work' ? 'var(--primary)' : 'var(--success)';
+            // Сброс флагов сессии
+            sessionDuration = 0;
+            sessionStartTime = null;
+        }
+
+        function stopTimer() {
+            if (timer) {
+                clearInterval(timer);
+                timer = null;
+            }
+            isRunning = false;
+            isPaused = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            stopBtn.disabled = true;
+            updateButtons();
+            // Если сессия была запущена и не завершена, не сохраняем (пользователь остановил вручную)
+            sessionStartTime = null;
+        }
+
+        function updateButtons() {
+            if (isRunning && !isPaused) {
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                stopBtn.disabled = false;
+            } else if (isPaused) {
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                stopBtn.disabled = true;
+            }
+        }
+
+        // Сохранение сессии на бэкенд
+        async function saveSessionToBackend(taskId, durationMinutes, type) {
+            try {
+                const data = {
+                    taskId: taskId || null,
+                    type: type.toUpperCase(),
+                    durationMinutes: durationMinutes
+                };
+                await api.saveSession(data);
+                showToast('Сессия сохранена!');
+                await loadHistory(historyPage); // обновляем историю
+            } catch (e) {
+                showToast('Ошибка сохранения сессии: ' + e.message, true);
+            }
+        }
+
+        // Основной тик таймера
+        function tick() {
+            if (remainingSeconds <= 0) {
+                // Завершение сессии
+                stopTimer();
+                const duration = Math.round((totalSeconds - remainingSeconds) / 60); // фактическая длительность в минутах
+                const type = currentMode;
+                const taskId = taskSelect.value ? parseInt(taskSelect.value) : null;
+                // Сохраняем сессию
+                saveSessionToBackend(taskId, duration || 1, type);
+
+                // Переключение режима (автоматически)
+                if (currentMode === 'work') {
+                    sessionCount++;
+                    const sessionsBeforeLong = parseInt(sessionsBeforeLongInput.value);
+                    if (sessionCount % sessionsBeforeLong === 0) {
+                        setMode('longBreak');
+                    } else {
+                        setMode('shortBreak');
+                    }
+                } else {
+                    setMode('work');
+                }
+                timerStatus.textContent = '⏰ Сессия завершена!';
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                stopBtn.disabled = true;
+                isRunning = false;
+                updateDisplay();
+                return;
+            }
+
+            remainingSeconds--;
+            sessionDuration = Math.round((totalSeconds - remainingSeconds) / 60);
+            updateDisplay();
+        }
+
+        // ---------- УПРАВЛЕНИЕ ТАЙМЕРОМ ----------
+        function startTimer() {
+            if (isPaused) {
+                // Возобновление
+                isPaused = false;
+                isRunning = true;
+                timer = setInterval(tick, 1000);
+                timerStatus.textContent = '▶ Работает';
+                updateButtons();
+                return;
+            }
+            if (isRunning) return;
+            // Новый старт
+            if (remainingSeconds <= 0) {
+                setMode(currentMode);
+            }
+            isRunning = true;
+            isPaused = false;
+            timer = setInterval(tick, 1000);
+            timerStatus.textContent = '▶ Работает';
+            updateButtons();
+            // Запоминаем время старта для сессии
+            sessionStartTime = new Date();
+        }
+
+        function pauseTimer() {
+            if (isRunning && !isPaused) {
+                clearInterval(timer);
+                timer = null;
+                isPaused = true;
+                isRunning = false;
+                timerStatus.textContent = '⏸ Пауза';
+                updateButtons();
+            }
+        }
+
+        function stopTimerAction() {
+            stopTimer();
+            setMode(currentMode);
+            timerStatus.textContent = '⏹ Остановлен';
+            updateButtons();
+        }
+
+        function resetTimer() {
+            stopTimer();
+            setMode('work');
+            sessionCount = 0;
+            timerStatus.textContent = '🔄 Сброс';
+            updateButtons();
+        }
+
+        // ---------- СОХРАНЕНИЕ НАСТРОЕК ----------
+        async function saveSettings() {
+            const settings = {
+                workDurationMinutes: parseInt(workInput.value) || 25,
+                shortBreakMinutes: parseInt(shortInput.value) || 5,
+                longBreakMinutes: parseInt(longInput.value) || 15,
+                sessionsBeforeLongBreak: parseInt(sessionsBeforeLongInput.value) || 4,
+                autoStartBreaks: false, // опционально
+                autoStartWork: false
+            };
+            try {
+                await api.updateSettings(settings);
+                showToast('Настройки сохранены!');
+                // Применяем к текущему таймеру, если он не запущен
+                if (!isRunning && !isPaused) {
+                    setMode(currentMode);
+                }
+            } catch (e) {
+                showToast('Ошибка сохранения настроек: ' + e.message, true);
+            }
+        }
+
+        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+        async function init() {
+            // Загружаем настройки
+            await loadSettings();
+            // Загружаем задачи
+            await loadTasksForSelect();
+            // Загружаем историю
+            await loadHistory(0);
+            // Применяем режим работы
+            setMode('work');
+
+            // Обработчики кнопок
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            stopBtn.addEventListener('click', stopTimerAction);
+            resetBtn.addEventListener('click', resetTimer);
+
+            saveSettingsBtn.addEventListener('click', saveSettings);
+
+            // При изменении настроек можно сразу применять (но не обязательно)
+            [workInput, shortInput, longInput, sessionsBeforeLongInput].forEach(input => {
+                input.addEventListener('change', function() {
+                    if (!isRunning && !isPaused) {
+                        setMode(currentMode);
+                    }
+                });
+            });
+
+            // Запрос разрешения на уведомления
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        // ---------- ТЕМА И МОБИЛЬНОЕ МЕНЮ ----------
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            themeToggle.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
+            localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+        });
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        menuToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Запуск
+        init();
+    })();
+</script>
+</body>
+</html>

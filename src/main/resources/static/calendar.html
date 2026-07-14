@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календарь – Тайм-менеджер</title>
+    <style>
+        /* ----- Переменные (единые для всех страниц) ----- */
+        :root {
+            --bg-body: #f5f7fa;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-header: #ffffff;
+            --bg-input: #f0f2f5;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.1);
+            --primary: #1976d2;
+            --primary-light: #e3f0ff;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #22c55e;
+            --radius: 16px;
+            --transition: 0.25s ease;
+        }
+        body.dark {
+            --bg-body: #121212;
+            --bg-sidebar: #1e1e1e;
+            --bg-card: #1e1e1e;
+            --bg-header: #1e1e1e;
+            --bg-input: #2d2d2d;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-hover: 0 8px 24px rgba(0,0,0,0.5);
+            --primary-light: #1a2a4a;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
+        body { background:var(--bg-body); color:var(--text-primary); transition: background var(--transition), color var(--transition); display:flex; min-height:100vh; }
+
+        /* ----- Sidebar ----- */
+        .sidebar {
+            width:260px; background:var(--bg-sidebar); border-right:1px solid var(--border-color);
+            padding:24px 20px; display:flex; flex-direction:column; position:sticky; top:0; height:100vh;
+            transition: background var(--transition), border var(--transition); flex-shrink:0;
+        }
+        .sidebar .logo { font-size:24px; font-weight:700; color:var(--primary); margin-bottom:40px; display:flex; align-items:center; gap:10px; }
+        .sidebar nav { display:flex; flex-direction:column; gap:6px; flex:1; }
+        .sidebar nav a { display:flex; align-items:center; gap:14px; padding:12px 16px; border-radius:12px; color:var(--text-secondary); text-decoration:none; font-weight:500; transition:background var(--transition), color var(--transition); cursor:pointer; }
+        .sidebar nav a:hover { background:var(--primary-light); color:var(--primary); }
+        .sidebar nav a.active { background:var(--primary); color:#fff; }
+        .sidebar .user { border-top:1px solid var(--border-color); padding-top:20px; margin-top:10px; display:flex; align-items:center; gap:12px; }
+        .sidebar .user .avatar { width:40px; height:40px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:18px; }
+        .sidebar .user .name { font-weight:500; font-size:14px; }
+        .sidebar .user .email { font-size:12px; color:var(--text-muted); }
+
+        /* ----- Main ----- */
+        .main { flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+        /* ----- Header ----- */
+        .header {
+            background:var(--bg-header); padding:16px 32px; border-bottom:1px solid var(--border-color);
+            display:flex; align-items:center; justify-content:space-between; transition: background var(--transition), border var(--transition);
+            flex-wrap:wrap; gap:12px;
+        }
+        .header-left { display:flex; align-items:center; gap:16px; }
+        .header-left .menu-icon { display:none; font-size:28px; cursor:pointer; color:var(--text-primary); }
+        .header .search { background:var(--bg-input); border-radius:40px; padding:8px 18px; display:flex; align-items:center; gap:10px; border:1px solid transparent; transition:border var(--transition), background var(--transition); min-width:240px; }
+        .header .search:focus-within { border-color:var(--primary); background:var(--bg-card); }
+        .header .search input { background:transparent; border:none; outline:none; color:var(--text-primary); font-size:14px; width:100%; }
+        .header .search input::placeholder { color:var(--text-muted); }
+        .header-actions { display:flex; align-items:center; gap:16px; }
+        .header-actions .icon-btn { background:transparent; border:none; font-size:24px; cursor:pointer; color:var(--text-secondary); transition:color var(--transition); }
+        .header-actions .icon-btn:hover { color:var(--primary); }
+        .header-actions .theme-toggle { font-size:22px; }
+
+        /* ----- Content (календарь) ----- */
+        .content { padding:32px; flex:1; }
+
+        .calendar-controls {
+            display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:24px;
+        }
+        .calendar-controls .date-title { font-size:24px; font-weight:700; }
+        .calendar-controls .nav-buttons { display:flex; gap:8px; }
+        .calendar-controls .nav-buttons button {
+            background:var(--bg-card); border:1px solid var(--border-color); border-radius:40px; padding:8px 16px;
+            font-size:14px; font-weight:500; cursor:pointer; color:var(--text-primary); transition:background var(--transition), border var(--transition);
+        }
+        .calendar-controls .nav-buttons button:hover { background:var(--primary-light); border-color:var(--primary); }
+        .calendar-controls .view-toggle { display:flex; gap:4px; background:var(--bg-card); border:1px solid var(--border-color); border-radius:40px; padding:4px; }
+        .calendar-controls .view-toggle button {
+            background:transparent; border:none; padding:6px 18px; border-radius:30px; font-weight:500; font-size:14px;
+            cursor:pointer; color:var(--text-secondary); transition:all var(--transition);
+        }
+        .calendar-controls .view-toggle button.active { background:var(--primary); color:#fff; }
+        .calendar-controls .view-toggle button:hover:not(.active) { background:var(--primary-light); }
+
+        /* Календарная сетка (месяц) */
+        .calendar-grid {
+            background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow);
+            overflow:hidden; transition:background var(--transition), box-shadow var(--transition);
+        }
+        .calendar-grid .weekdays {
+            display:grid; grid-template-columns:repeat(7,1fr);
+            background:var(--bg-body); border-bottom:1px solid var(--border-color);
+            font-weight:600; color:var(--text-secondary); font-size:14px;
+        }
+        .calendar-grid .weekdays div { padding:14px 8px; text-align:center; }
+        .calendar-grid .days { display:grid; grid-template-columns:repeat(7,1fr); }
+        .calendar-grid .day-cell {
+            min-height:90px; padding:8px 6px; border-right:1px solid var(--border-color);
+            border-bottom:1px solid var(--border-color); cursor:pointer;
+            transition:background var(--transition); position:relative; background:var(--bg-card);
+        }
+        .calendar-grid .day-cell:nth-child(7n) { border-right:none; }
+        .calendar-grid .day-cell:hover { background:var(--primary-light); }
+        .calendar-grid .day-cell.other-month { opacity:0.4; }
+        .calendar-grid .day-cell .day-number { font-weight:500; font-size:16px; margin-bottom:4px; }
+        .calendar-grid .day-cell .task-dots { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
+        .calendar-grid .day-cell .task-dots .dot { width:6px; height:6px; border-radius:50%; background:var(--primary); }
+        .calendar-grid .day-cell .task-dots .dot.high { background:var(--danger); }
+        .calendar-grid .day-cell .task-dots .dot.medium { background:var(--warning); }
+        .calendar-grid .day-cell .task-dots .dot.low { background:var(--success); }
+        .calendar-grid .day-cell .task-count { font-size:11px; color:var(--text-muted); margin-top:4px; }
+
+        /* Виды «Неделя» и «День» (упрощённые) */
+        .week-view, .day-view { display:none; background:var(--bg-card); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; margin-top:16px; }
+        .week-view.active, .day-view.active { display:block; }
+        .week-view .week-grid, .day-view .day-grid {
+            display:grid; grid-template-columns:60px repeat(7,1fr); gap:1px;
+            background:var(--border-color); overflow:auto; max-height:600px;
+        }
+        .day-view .day-grid { grid-template-columns:60px 1fr; }
+        .week-view .week-grid .time-label, .day-view .day-grid .time-label {
+            background:var(--bg-body); padding:8px 4px; text-align:right; font-size:12px; color:var(--text-secondary);
+        }
+        .week-view .week-grid .hour-slot, .day-view .day-grid .hour-slot {
+            background:var(--bg-card); min-height:40px; padding:2px;
+        }
+        .week-view .week-grid .hour-slot .event, .day-view .day-grid .hour-slot .event {
+            background:var(--primary-light); border-radius:6px; padding:2px 6px; font-size:11px; color:var(--primary); margin:1px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        }
+
+        /* Модалка задач на день */
+        .modal-overlay {
+            position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px);
+            display:none; align-items:center; justify-content:center; z-index:999; padding:20px;
+        }
+        .modal-overlay.open { display:flex; }
+        .modal {
+            background:var(--bg-card); border-radius:var(--radius); max-width:480px; width:100%;
+            padding:28px; box-shadow:0 24px 48px rgba(0,0,0,0.2); transition:background var(--transition);
+        }
+        .modal h2 { margin-bottom:16px; }
+        .modal .task-list-modal { list-style:none; padding:0; max-height:300px; overflow-y:auto; }
+        .modal .task-list-modal li {
+            padding:10px 0; border-bottom:1px solid var(--border-color);
+            display:flex; justify-content:space-between; align-items:center; gap:8px;
+        }
+        .modal .task-list-modal li:last-child { border-bottom:none; }
+        .modal .task-list-modal .priority-badge {
+            font-size:11px; font-weight:600; padding:2px 10px; border-radius:40px; text-transform:uppercase;
+        }
+        .modal .task-list-modal .priority-badge.high { background:#fee2e2; color:#b91c1c; }
+        .modal .task-list-modal .priority-badge.medium { background:#fef3c7; color:#92400e; }
+        .modal .task-list-modal .priority-badge.low { background:#dcfce7; color:#166534; }
+        .modal .actions { display:flex; justify-content:flex-end; gap:12px; margin-top:16px; }
+        .modal .actions button { padding:8px 24px; border-radius:40px; font-weight:600; border:none; cursor:pointer; transition:background var(--transition); }
+        .modal .actions .btn-secondary { background:var(--bg-input); color:var(--text-secondary); }
+        .modal .actions .btn-secondary:hover { background:var(--border-color); }
+        .modal .actions .btn-primary { background:var(--primary); color:#fff; }
+        .modal .actions .btn-primary:hover { background:#1565c0; }
+        .modal .move-btn { background:var(--primary); color:#fff; border:none; border-radius:30px; padding:2px 12px; font-size:12px; cursor:pointer; transition:background var(--transition); }
+        .modal .move-btn:hover { background:#1565c0; }
+
+        /* Уведомления (toast) */
+        .toast { position:fixed; bottom:20px; right:20px; background:var(--bg-card); padding:12px 24px; border-radius:12px; box-shadow:var(--shadow-hover); border-left:4px solid var(--primary); z-index:9999; transition: all 0.3s; max-width:400px; }
+        .toast.error { border-left-color:var(--danger); }
+
+        /* Адаптив */
+        @media (max-width:768px) {
+            .sidebar { position:fixed; left:-280px; top:0; height:100vh; z-index:1000; transition:left 0.3s ease; box-shadow:4px 0 20px rgba(0,0,0,0.1); }
+            .sidebar.open { left:0; }
+            .header-left .menu-icon { display:block; }
+            .header .search { min-width:140px; flex:1; }
+            .content { padding:20px; }
+            .calendar-controls .date-title { font-size:20px; }
+            .calendar-grid .day-cell { min-height:60px; padding:4px; }
+            .calendar-grid .day-cell .day-number { font-size:14px; }
+            .calendar-grid .weekdays div { font-size:12px; padding:10px 4px; }
+        }
+        @media (max-width:480px) {
+            .header { padding:12px 16px; }
+            .calendar-controls .nav-buttons button { padding:6px 12px; font-size:12px; }
+            .calendar-controls .view-toggle button { padding:4px 12px; font-size:12px; }
+            .calendar-grid .day-cell { min-height:50px; }
+        }
+        .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:999; }
+        .sidebar-overlay.active { display:block; }
+        .loading { text-align:center; padding:40px; color:var(--text-secondary); }
+        .error-msg { color:var(--danger); text-align:center; padding:20px; }
+    </style>
+</head>
+<body>
+<!-- Sidebar overlay для мобильных -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="logo">⏳ TaskFlow</div>
+    <nav>
+        <a href="#">📋 Задачи</a>
+        <a href="#" class="active">📅 Календарь</a>
+        <a href="#">⏱ Таймер</a>
+        <a href="#">📊 Статистика</a>
+        <a href="#">⚙️ Настройки</a>
+    </nav>
+    <div class="user">
+        <div class="avatar">А</div>
+        <div>
+            <div class="name">Алексей</div>
+            <div class="email">alex@example.com</div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <span class="menu-icon" id="menuToggle">☰</span>
+            <div class="search">
+                <span>🔍</span>
+                <input type="text" id="globalSearch" placeholder="Поиск задач..." />
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" title="Уведомления">🔔</button>
+            <button class="icon-btn theme-toggle" id="themeToggle" title="Переключить тему">🌙</button>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="content">
+        <div class="calendar-controls">
+            <div class="date-title" id="currentMonthTitle">Апрель 2026</div>
+            <div class="nav-buttons">
+                <button id="prevMonth">◀ Пред.</button>
+                <button id="todayBtn">Сегодня</button>
+                <button id="nextMonth">След. ▶</button>
+            </div>
+            <div class="view-toggle">
+                <button class="active" data-view="month">Месяц</button>
+                <button data-view="week">Неделя</button>
+                <button data-view="day">День</button>
+            </div>
+        </div>
+
+        <!-- Месячный вид -->
+        <div class="calendar-grid" id="monthView">
+            <div class="weekdays">
+                <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+            </div>
+            <div class="days" id="daysGrid"></div>
+        </div>
+
+        <!-- Недельный вид (упрощённо) -->
+        <div class="week-view" id="weekView">
+            <div class="week-grid" id="weekGrid"></div>
+        </div>
+
+        <!-- Дневной вид (упрощённо) -->
+        <div class="day-view" id="dayView">
+            <div class="day-grid" id="dayGrid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка задач на день -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <h2 id="modalDateTitle">Задачи на 12 апреля</h2>
+        <ul class="task-list-modal" id="modalTaskList"></ul>
+        <div class="actions">
+            <button class="btn-secondary" id="modalClose">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- БАЗОВЫЙ URL И ТОКЕН ----------
+        const API_BASE = 'http://localhost:8080/api/v1';
+        let token = localStorage.getItem('jwtToken');
+        if (!token) {
+            alert('Вы не авторизованы. Перенаправление на страницу входа.');
+            window.location.href = '/login.html';
+        }
+
+        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+        function getHeaders() {
+            return {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function handleResponse(response) {
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('jwtToken');
+                    alert('Сессия истекла. Войдите заново.');
+                    window.location.href = '/login.html';
+                    return Promise.reject('Unauthorized');
+                }
+                return response.json().then(err => {
+                    throw new Error(err.message || 'Ошибка сервера');
+                });
+            }
+            return response.json();
+        }
+
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const div = document.createElement('div');
+            div.className = 'toast' + (isError ? ' error' : '');
+            div.textContent = message;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+
+        // ---------- API ВЫЗОВЫ ----------
+        const api = {
+            // Получение задач за период
+            async getTasksForCalendar(start, end, status, priority, categoryId) {
+                const params = new URLSearchParams({ start, end });
+                if (status) params.append('status', status);
+                if (priority) params.append('priority', priority);
+                if (categoryId) params.append('categoryId', categoryId);
+                const url = `${API_BASE}/tasks/calendar?${params}`;
+                const resp = await fetch(url, { headers: getHeaders() });
+                return handleResponse(resp);
+            },
+
+            // Получение количества задач по дням
+            async getTaskCounts(start, end) {
+                const params = new URLSearchParams({ start, end });
+                const url = `${API_BASE}/tasks/calendar/counts?${params}`;
+                const resp = await fetch(url, { headers: getHeaders() });
+                return handleResponse(resp);
+            },
+
+            // Получение задач на конкретную дату
+            async getTasksForDay(date) {
+                const url = `${API_BASE}/tasks/day/${date}`;
+                const resp = await fetch(url, { headers: getHeaders() });
+                return handleResponse(resp);
+            },
+
+            // Обновление даты задачи
+            async updateTaskDate(id, dueDate, version) {
+                const url = `${API_BASE}/tasks/${id}/date`;
+                const resp = await fetch(url, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ dueDate, version })
+                });
+                return handleResponse(resp);
+            }
+        };
+
+        // ---------- DOM ЭЛЕМЕНТЫ ----------
+        const monthView = document.getElementById('monthView');
+        const weekView = document.getElementById('weekView');
+        const dayView = document.getElementById('dayView');
+        const daysGrid = document.getElementById('daysGrid');
+        const currentMonthTitle = document.getElementById('currentMonthTitle');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalDateTitle = document.getElementById('modalDateTitle');
+        const modalTaskList = document.getElementById('modalTaskList');
+        const modalClose = document.getElementById('modalClose');
+
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const todayBtn = document.getElementById('todayBtn');
+
+        // ---------- СОСТОЯНИЕ ----------
+        let currentDate = new Date();
+        let currentView = 'month'; // 'month', 'week', 'day'
+        let tasksCache = {}; // кэш задач по датам для текущего месяца
+        let taskCounts = {}; // { '2026-04-01': 2, ... }
+
+        // ---------- ТЕМА И МОБИЛЬНОЕ МЕНЮ ----------
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            themeToggle.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
+            localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+        });
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark');
+            themeToggle.textContent = '☀️';
+        }
+
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+        menuToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ДАТ ----------
+        function formatDateKey(year, month, day) {
+            return `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+        }
+
+        function getDaysInMonth(year, month) {
+            return new Date(year, month+1, 0).getDate();
+        }
+
+        function getFirstDayOfMonth(year, month) {
+            return new Date(year, month, 1).getDay(); // 0=вс
+        }
+
+        // ---------- ЗАГРУЗКА ДАННЫХ ДЛЯ МЕСЯЦА ----------
+        async function loadMonthData(year, month) {
+            const start = formatDateKey(year, month, 1);
+            const end = formatDateKey(year, month, getDaysInMonth(year, month));
+            try {
+                // Получаем количество задач по дням
+                const counts = await api.getTaskCounts(start, end);
+                taskCounts = counts;
+                // Также можем получить задачи для отображения в модалке (но будем грузить по клику)
+                return true;
+            } catch (e) {
+                showToast('Ошибка загрузки данных календаря: ' + e.message, true);
+                return false;
+            }
+        }
+
+        // ---------- ОТРИСОВКА МЕСЯЦА ----------
+        async function renderMonth(year, month) {
+            // Загружаем данные
+            const success = await loadMonthData(year, month);
+            if (!success) return;
+
+            const firstDay = getFirstDayOfMonth(year, month);
+            const daysInMonth = getDaysInMonth(year, month);
+            const startOffset = firstDay === 0 ? 6 : firstDay - 1; // Пн = 0
+
+            const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+            currentMonthTitle.textContent = `${monthNames[month]} ${year}`;
+
+            const today = new Date();
+            const todayKey = formatDateKey(today.getFullYear(), today.getMonth(), today.getDate());
+
+            let html = '';
+            for (let i = 0; i < startOffset; i++) {
+                html += `<div class="day-cell other-month"></div>`;
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateKey = formatDateKey(year, month, d);
+                const count = taskCounts[dateKey] || 0;
+                const isToday = (dateKey === todayKey);
+
+                let dotsHtml = '';
+                if (count > 0) {
+                    // Показываем до 3 точек (цвета не знаем, поэтому просто серые)
+                    const dots = Array.from({length: Math.min(count, 3)}, () => `<span class="dot"></span>`).join('');
+                    dotsHtml = `<div class="task-dots">${dots}</div>`;
+                    if (count > 3) {
+                        dotsHtml += `<div class="task-count">+${count-3}</div>`;
+                    }
+                }
+
+                const todayClass = isToday ? ' style="border:2px solid var(--primary);"' : '';
+                html += `<div class="day-cell" data-date="${dateKey}"${todayClass}>
+                            <div class="day-number">${d}</div>
+                            ${dotsHtml}
+                         </div>`;
+            }
+
+            daysGrid.innerHTML = html;
+
+            // Добавляем обработчики клика по ячейкам
+            document.querySelectorAll('.day-cell[data-date]').forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const dateKey = this.dataset.date;
+                    showDayTasks(dateKey);
+                });
+            });
+        }
+
+        // ---------- ПОКАЗ ЗАДАЧ НА ДЕНЬ (МОДАЛКА) ----------
+        async function showDayTasks(dateKey) {
+            try {
+                const tasks = await api.getTasksForDay(dateKey);
+                const dateObj = new Date(dateKey + 'T00:00:00');
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                modalDateTitle.textContent = `Задачи на ${dateObj.toLocaleDateString('ru-RU', options)}`;
+
+                if (!tasks || tasks.length === 0) {
+                    modalTaskList.innerHTML = '<li style="color:var(--text-muted);">Нет задач на этот день</li>';
+                } else {
+                    let html = '';
+                    tasks.forEach(task => {
+                        const priorityClass = task.priority ? task.priority.toLowerCase() : 'low';
+                        const priorityLabel = { HIGH:'Высокий', MEDIUM:'Средний', LOW:'Низкий' }[task.priority] || 'Низкий';
+                        html += `
+                            <li>
+                                <span>${task.title}</span>
+                                <span>
+                                    <span class="priority-badge ${priorityClass}">${priorityLabel}</span>
+                                    <button class="move-btn" data-task-id="${task.id}" data-version="${task.version}" data-date="${dateKey}">📅 Перенести сюда</button>
+                                </span>
+                            </li>
+                        `;
+                    });
+                    modalTaskList.innerHTML = html;
+
+                    // Обработчики для кнопок переноса
+                    modalTaskList.querySelectorAll('.move-btn').forEach(btn => {
+                        btn.addEventListener('click', async function(e) {
+                            e.stopPropagation();
+                            const taskId = Number(this.dataset.taskId);
+                            const version = Number(this.dataset.version);
+                            const newDate = this.dataset.date;
+                            // Создаём дату с текущим временем (сохраняем время задачи? упрощённо — ставим полночь)
+                            const dueDate = newDate + 'T00:00:00';
+                            try {
+                                await api.updateTaskDate(taskId, dueDate, version);
+                                showToast('Задача перенесена на ' + newDate);
+                                // Перезагружаем месяц
+                                await renderMonth(currentDate.getFullYear(), currentDate.getMonth());
+                                modalOverlay.classList.remove('open');
+                            } catch (err) {
+                                if (err.message === 'CONFLICT') {
+                                    showToast('Конфликт: задача была изменена. Обновите страницу.', true);
+                                    modalOverlay.classList.remove('open');
+                                    await renderMonth(currentDate.getFullYear(), currentDate.getMonth());
+                                } else {
+                                    showToast('Ошибка переноса: ' + err.message, true);
+                                }
+                            }
+                        });
+                    });
+                }
+                modalOverlay.classList.add('open');
+            } catch (e) {
+                showToast('Ошибка загрузки задач: ' + e.message, true);
+            }
+        }
+
+        // ---------- НАВИГАЦИЯ ----------
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderMonth(currentDate.getFullYear(), currentDate.getMonth());
+        }
+
+        function goToday() {
+            currentDate = new Date();
+            renderMonth(currentDate.getFullYear(), currentDate.getMonth());
+        }
+
+        prevMonthBtn.addEventListener('click', () => changeMonth(-1));
+        nextMonthBtn.addEventListener('click', () => changeMonth(1));
+        todayBtn.addEventListener('click', goToday);
+
+        // ---------- ПЕРЕКЛЮЧЕНИЕ ВИДОВ (упрощённо) ----------
+        document.querySelectorAll('.view-toggle button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-toggle button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const view = this.dataset.view;
+                currentView = view;
+                // Скрываем все виды
+                monthView.style.display = 'none';
+                weekView.classList.remove('active');
+                dayView.classList.remove('active');
+                if (view === 'month') {
+                    monthView.style.display = 'block';
+                    renderMonth(currentDate.getFullYear(), currentDate.getMonth());
+                } else if (view === 'week') {
+                    weekView.classList.add('active');
+                    // Заглушка: просто показываем сообщение
+                    document.getElementById('weekGrid').innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary);">Недельный вид (упрощённо). Для полноценной реализации требуется больше логики.</div>';
+                } else if (view === 'day') {
+                    dayView.classList.add('active');
+                    document.getElementById('dayGrid').innerHTML = '<div style="padding:20px;text-align:center;color:var(--text-secondary);">Дневной вид (упрощённо). Для полноценной реализации требуется больше логики.</div>';
+                }
+            });
+        });
+
+        // ---------- ЗАКРЫТИЕ МОДАЛКИ ----------
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('open');
+        });
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) modalOverlay.classList.remove('open');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') modalOverlay.classList.remove('open');
+        });
+
+        // ---------- ИНИЦИАЛИЗАЦИЯ ----------
+        renderMonth(currentDate.getFullYear(), currentDate.getMonth());
+    })();
+</script>
+</body>
+</html>

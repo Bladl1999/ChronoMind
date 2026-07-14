@@ -10,8 +10,8 @@ import java.util.UUID;
 @MappedSuperclass
 public class BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue
+    private Long id;
 
     @CreationTimestamp
     @Column(name = "create_timestamp")
@@ -26,14 +26,6 @@ public class BaseEntity {
 
     @Column(name = "deleted")
     private Boolean deleted = false;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public Instant getCreateTimestamp() {
         return createTimestamp;
