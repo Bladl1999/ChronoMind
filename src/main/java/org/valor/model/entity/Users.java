@@ -1,7 +1,6 @@
 package org.valor.model.entity;
 
 import jakarta.persistence.*;
-import org.valor.model.dto.UserSettingsDto;
 
 import java.time.LocalDateTime;
 

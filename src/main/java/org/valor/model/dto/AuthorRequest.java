@@ -1,6 +1,9 @@
 package org.valor.model.dto;
 
-public class AuthorRequest {
-    private String email;
-    private String password;
-}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record AuthorRequest (
+    @JsonProperty("email") String email,
+    @JsonProperty("password") String password
+){}
+

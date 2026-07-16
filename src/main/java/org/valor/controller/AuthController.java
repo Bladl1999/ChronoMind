@@ -1,9 +1,10 @@
 package org.valor.controller;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.valor.model.dto.AuthResponse;
 import org.valor.model.dto.AuthorRequest;
 import org.valor.service.auth.AuthService;
 
@@ -20,8 +21,8 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public void login(@RequestBody AuthorRequest authorRequest){
-        System.out.println();
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthorRequest authorRequest) {
+        return authService.login(authorRequest);
     }
 
     @PostMapping("/logout")
