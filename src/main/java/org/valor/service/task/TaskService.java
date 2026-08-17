@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.valor.model.dto.TaskDateUpdateRequest;
 import org.valor.model.dto.TaskRequest;
 import org.valor.model.dto.TaskResponse;
+import org.valor.model.entity.Task;
+import org.valor.model.entity.Users;
 import org.valor.model.enums.Priority;
 import org.valor.model.enums.Status;
 
@@ -14,9 +16,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface TaskService {
+//    List<TaskResponse> findTasks(Pageable pageable, String search, Status status, Priority priority, Long categoryId, LocalDate dueDateFrom, LocalDate dueDateTo);
+
     Page<TaskResponse> findTasks(Pageable pageable, String search, Status status, Priority priority, Long categoryId, LocalDate dueDateFrom, LocalDate dueDateTo);
 
-    TaskResponse createTask(TaskRequest request, User user);
+    TaskResponse createTask(TaskRequest request, Users user);
 
     TaskResponse updateTask(Long id, TaskRequest request, User user);
 

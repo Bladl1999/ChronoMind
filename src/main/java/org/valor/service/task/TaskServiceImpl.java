@@ -4,39 +4,66 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.valor.mapper.TaskMapper;
 import org.valor.model.dto.TaskDateUpdateRequest;
 import org.valor.model.dto.TaskRequest;
 import org.valor.model.dto.TaskResponse;
 import org.valor.model.entity.Task;
+import org.valor.model.entity.Users;
 import org.valor.model.enums.Priority;
 import org.valor.model.enums.Status;
 import org.valor.repository.TaskRepository;
+import org.valor.repository.UsersRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl implements TaskService{
 
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
+    private final UsersRepository usersRepository;
 
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository) {
+    public TaskServiceImpl(
+            TaskRepository taskRepository,
+            UsersRepository usersRepository
+    ) {
         this.taskRepository = taskRepository;
+        this.usersRepository = usersRepository;
     }
+
+//    @Override
+//    public List<TaskResponse> findTasks(
+//            Pageable pageable,
+//            String search,
+//            Status status,
+//            Priority priority,
+//            Long categoryId,
+//            LocalDate dueDateFrom,
+//            LocalDate dueDateTo
+//    ) {
+//        return taskRepository.findAll(pageable).stream().map(task -> TaskMapper.toDto(task)).toList();
+//    }
 
     @Override
     public Page<TaskResponse> findTasks(Pageable pageable, String search, Status status, Priority priority, Long categoryId, LocalDate dueDateFrom, LocalDate dueDateTo) {
-        return null;
+        return taskRepository.findAll(pageable).map(TaskMapper::toDto);
     }
 
     @Override
-    public TaskResponse createTask(TaskRequest request, User user) {
-        return null;
+    @Transactional
+    public TaskResponse createTask(TaskRequest request, Users user) {
+        String name = user.getUserName();
+        Users users = usersRepository.findByUserName(name).orElseThrow(() -> new UsernameNotFoundException("Пользователь " + name + " не найден"));
+        Task task = TaskMapper.toEntity(request, users, null);
+        taskRepository.save(task);
+        return TaskMapper.toDto(task);
     }
 
     @Override

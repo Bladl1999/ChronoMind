@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.valor.model.dto.AuthResponse;
 import org.valor.model.dto.AuthorRequest;
+import org.valor.model.dto.RegisterRequest;
 import org.valor.service.auth.AuthService;
 
 @RestController
@@ -29,5 +30,12 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@RequestHeader("Authorization") String token) {
         authService.logout(token);
+    }
+
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        authService.register(request);
+        return ResponseEntity.ok("Регистрация прошла успешна");
     }
 }

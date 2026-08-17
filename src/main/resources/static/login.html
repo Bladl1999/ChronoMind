@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход – Тайм-менеджер</title>
+    <title>Вход / Регистрация – Тайм-менеджер</title>
     <style>
-        /* ----- Переменные (единые для всех страниц) ----- */
+        /* ----- Переменные (единый стиль) ----- */
         :root {
             --bg-body: #f5f7fa;
             --bg-card: #ffffff;
             --bg-input: #f0f2f5;
-            --bg-switch: #d1d5db;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
             --text-muted: #94a3b8;
@@ -29,7 +28,6 @@
             --bg-body: #121212;
             --bg-card: #1e1e1e;
             --bg-input: #2d2d2d;
-            --bg-switch: #4b5563;
             --text-primary: #e2e8f0;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
@@ -57,8 +55,8 @@
             padding: 20px;
         }
 
-        /* ----- Карточка входа ----- */
-        .login-card {
+        /* ----- Карточка ----- */
+        .auth-card {
             background: var(--bg-card);
             border-radius: var(--radius);
             box-shadow: var(--shadow-hover);
@@ -68,33 +66,33 @@
             transition: background var(--transition), box-shadow var(--transition);
         }
 
-        .login-card .logo {
+        .auth-card .logo {
             text-align: center;
             font-size: 32px;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
-        .login-card .subtitle {
+        .auth-card .subtitle {
             text-align: center;
             color: var(--text-secondary);
             font-size: 14px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
 
-        .login-card .field {
+        .auth-card .field {
             margin-bottom: 18px;
         }
 
-        .login-card .field label {
+        .auth-card .field label {
             display: block;
             font-weight: 500;
             font-size: 14px;
             margin-bottom: 4px;
         }
 
-        .login-card .field input {
+        .auth-card .field input {
             width: 100%;
             padding: 10px 14px;
             border: 1px solid var(--border-color);
@@ -106,11 +104,11 @@
             transition: border var(--transition), background var(--transition);
         }
 
-        .login-card .field input:focus {
+        .auth-card .field input:focus {
             border-color: var(--primary);
         }
 
-        .login-card .btn-primary {
+        .auth-card .btn-primary {
             width: 100%;
             padding: 10px;
             border: none;
@@ -123,16 +121,16 @@
             transition: background var(--transition);
         }
 
-        .login-card .btn-primary:hover {
+        .auth-card .btn-primary:hover {
             background: #1565c0;
         }
 
-        .login-card .btn-primary:disabled {
+        .auth-card .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
         }
 
-        .login-card .error-msg {
+        .auth-card .error-msg {
             color: var(--danger);
             font-size: 14px;
             text-align: center;
@@ -140,27 +138,37 @@
             min-height: 20px;
         }
 
-        .login-card .footer-links {
+        .auth-card .footer-links {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             margin-top: 16px;
             font-size: 14px;
             color: var(--text-secondary);
+            gap: 8px;
         }
 
-        .login-card .footer-links a {
+        .auth-card .footer-links a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 500;
             transition: color var(--transition);
+            cursor: pointer;
         }
 
-        .login-card .footer-links a:hover {
+        .auth-card .footer-links a:hover {
             color: #1565c0;
             text-decoration: underline;
         }
 
-        /* Кнопка переключения темы в правом верхнем углу */
+        .auth-card .form-container {
+            display: block;
+        }
+
+        .auth-card .form-container.hidden {
+            display: none;
+        }
+
+        /* ----- Кнопка темы ----- */
         .theme-toggle-wrapper {
             position: fixed;
             top: 16px;
@@ -185,12 +193,12 @@
             border-color: var(--primary);
         }
 
-        /* Адаптив */
+        /* ----- Адаптив ----- */
         @media (max-width: 480px) {
-            .login-card {
+            .auth-card {
                 padding: 28px 20px;
             }
-            .login-card .logo {
+            .auth-card .logo {
                 font-size: 28px;
             }
             .theme-toggle-wrapper {
@@ -210,27 +218,56 @@
     <button id="themeToggle" title="Переключить тему">🌙</button>
 </div>
 
-<!-- Карточка входа -->
-<div class="login-card">
+<!-- Карточка -->
+<div class="auth-card">
     <div class="logo">⏳ TaskFlow</div>
-    <div class="subtitle">Войдите в свой аккаунт</div>
+    <div class="subtitle" id="formSubtitle">Войдите в свой аккаунт</div>
 
-    <form id="loginForm">
-        <div class="field">
-            <label for="email">Email</label>
-            <input type="email" id="email" placeholder="example@mail.com" required autofocus>
+    <!-- Форма входа -->
+    <div class="form-container" id="loginFormContainer">
+        <form id="loginForm">
+            <div class="field">
+                <label for="loginUsername">Логин</label>
+                <input type="text" id="loginUsername" placeholder="Введите логин" required autofocus>
+            </div>
+            <div class="field">
+                <label for="loginPassword">Пароль</label>
+                <input type="password" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" id="loginBtn">Войти</button>
+            <div class="error-msg" id="loginError"></div>
+        </form>
+        <div class="footer-links">
+            <a href="#" id="forgotLink">Забыли пароль?</a>
+            <a href="#" id="switchToRegister">Регистрация</a>
         </div>
-        <div class="field">
-            <label for="password">Пароль</label>
-            <input type="password" id="password" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="btn-primary" id="loginBtn">Войти</button>
-        <div class="error-msg" id="errorMsg"></div>
-    </form>
+    </div>
 
-    <div class="footer-links">
-        <a href="#" id="forgotLink">Забыли пароль?</a>
-        <a href="#" id="registerLink">Регистрация</a>
+    <!-- Форма регистрации -->
+    <div class="form-container hidden" id="registerFormContainer">
+        <form id="registerForm">
+            <div class="field">
+                <label for="regUsername">Логин</label>
+                <input type="text" id="regUsername" placeholder="Придумайте логин" required>
+            </div>
+            <div class="field">
+                <label for="regEmail">Email</label>
+                <input type="email" id="regEmail" placeholder="example@mail.com" required>
+            </div>
+            <div class="field">
+                <label for="regPassword">Пароль</label>
+                <input type="password" id="regPassword" placeholder="минимум 6 символов" required minlength="6">
+            </div>
+            <div class="field">
+                <label for="regPasswordConfirm">Подтверждение пароля</label>
+                <input type="password" id="regPasswordConfirm" placeholder="повторите пароль" required>
+            </div>
+            <button type="submit" class="btn-primary" id="registerBtn">Зарегистрироваться</button>
+            <div class="error-msg" id="registerError"></div>
+        </form>
+        <div class="footer-links">
+            <a href="#" id="switchToLogin">Уже есть аккаунт? Войти</a>
+        </div>
     </div>
 </div>
 
@@ -263,12 +300,7 @@
         }
 
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            applyTheme(savedTheme);
-        } else {
-            // По умолчанию — системная
-            applyTheme('system');
-        }
+        applyTheme(savedTheme || 'system');
 
         themeToggle.addEventListener('click', () => {
             const current = localStorage.getItem('theme') || 'system';
@@ -277,24 +309,58 @@
             else applyTheme('light');
         });
 
-        // ----- Обработка формы -----
-        const form = document.getElementById('loginForm');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginBtn = document.getElementById('loginBtn');
-        const errorMsg = document.getElementById('errorMsg');
+        // ----- Переключение форм -----
+        const loginContainer = document.getElementById('loginFormContainer');
+        const registerContainer = document.getElementById('registerFormContainer');
+        const subtitle = document.getElementById('formSubtitle');
+        const switchToRegister = document.getElementById('switchToRegister');
+        const switchToLogin = document.getElementById('switchToLogin');
 
-        form.addEventListener('submit', async (e) => {
+        function showLoginForm() {
+            loginContainer.classList.remove('hidden');
+            registerContainer.classList.add('hidden');
+            subtitle.textContent = 'Войдите в свой аккаунт';
+            // очищаем ошибки
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('registerError').textContent = '';
+        }
+
+        function showRegisterForm() {
+            registerContainer.classList.remove('hidden');
+            loginContainer.classList.add('hidden');
+            subtitle.textContent = 'Создайте новый аккаунт';
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('registerError').textContent = '';
+        }
+
+        switchToRegister.addEventListener('click', (e) => {
             e.preventDefault();
-            errorMsg.textContent = '';
+            showRegisterForm();
+        });
+
+        switchToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            showLoginForm();
+        });
+
+        // ----- Обработка входа -----
+        const loginForm = document.getElementById('loginForm');
+        const loginUsername = document.getElementById('loginUsername');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.textContent = '';
             loginBtn.disabled = true;
             loginBtn.textContent = 'Вход...';
 
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
+            const username = loginUsername.value.trim();
+            const password = loginPassword.value.trim();
 
-            if (!email || !password) {
-                errorMsg.textContent = 'Заполните все поля';
+            if (!username || !password) {
+                loginError.textContent = 'Заполните все поля';
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Войти';
                 return;
@@ -304,16 +370,16 @@
                 const response = await fetch('/api/v1/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ username, password })   // отправляем username вместо email
                 });
 
                 if (!response.ok) {
-                    let errMsg = 'Неверный email или пароль';
+                    let errMsg = 'Неверный логин или пароль';
                     try {
                         const errData = await response.json();
                         if (errData.message) errMsg = errData.message;
                     } catch (_) {}
-                    errorMsg.textContent = errMsg;
+                    loginError.textContent = errMsg;
                     loginBtn.disabled = false;
                     loginBtn.textContent = 'Войти';
                     return;
@@ -322,30 +388,104 @@
                 const data = await response.json();
                 if (data.token) {
                     localStorage.setItem('jwtToken', data.token);
-                    // Если есть refreshToken, можно сохранить отдельно
-                    // Перенаправляем на страницу задач
                     window.location.href = '/tasks.html';
                 } else {
-                    errorMsg.textContent = 'Ошибка: токен не получен';
+                    loginError.textContent = 'Ошибка: токен не получен';
                     loginBtn.disabled = false;
                     loginBtn.textContent = 'Войти';
                 }
             } catch (err) {
-                errorMsg.textContent = 'Ошибка соединения с сервером';
+                loginError.textContent = 'Ошибка соединения с сервером';
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Войти';
             }
         });
 
-        // Демо-ссылки (заглушки)
+        // ----- Обработка регистрации -----
+        const registerForm = document.getElementById('registerForm');
+        const regUsername = document.getElementById('regUsername');
+        const regEmail = document.getElementById('regEmail');
+        const regPassword = document.getElementById('regPassword');
+        const regPasswordConfirm = document.getElementById('regPasswordConfirm');
+        const registerBtn = document.getElementById('registerBtn');
+        const registerError = document.getElementById('registerError');
+
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            registerError.textContent = '';
+            registerBtn.disabled = true;
+            registerBtn.textContent = 'Регистрация...';
+
+            const username = regUsername.value.trim();
+            const email = regEmail.value.trim();
+            const password = regPassword.value;
+            const confirm = regPasswordConfirm.value;
+
+            if (!username || !email || !password || !confirm) {
+                registerError.textContent = 'Заполните все поля';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Зарегистрироваться';
+                return;
+            }
+
+            if (password.length < 6) {
+                registerError.textContent = 'Пароль должен быть не менее 6 символов';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Зарегистрироваться';
+                return;
+            }
+
+            if (password !== confirm) {
+                registerError.textContent = 'Пароли не совпадают';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Зарегистрироваться';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })  // username вместо name
+                });
+
+                if (!response.ok) {
+                    let errMsg = 'Ошибка регистрации';
+                    try {
+                        const errData = await response.json();
+                        if (errData.message) errMsg = errData.message;
+                    } catch (_) {}
+                    registerError.textContent = errMsg;
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = 'Зарегистрироваться';
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.token) {
+                    localStorage.setItem('jwtToken', data.token);
+                    window.location.href = '/tasks.html';
+                } else {
+                    showLoginForm();
+                    document.getElementById('loginError').textContent = 'Регистрация успешна! Войдите с новыми данными.';
+                }
+            } catch (err) {
+                registerError.textContent = 'Ошибка соединения с сервером';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Зарегистрироваться';
+            }
+        });
+
+        // ----- Забыли пароль (заглушка) -----
         document.getElementById('forgotLink').addEventListener('click', (e) => {
             e.preventDefault();
-            alert('Функция восстановления пароля будет доступна позже.');
+            alert('Восстановление пароля будет доступно позже.');
         });
-        document.getElementById('registerLink').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Регистрация будет доступна позже.');
-        });
+
+        // Если на странице есть параметр ?register, можно сразу показать форму регистрации
+        if (window.location.search.includes('register')) {
+            showRegisterForm();
+        }
     })();
 </script>
 </body>

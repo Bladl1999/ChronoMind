@@ -27,6 +27,14 @@ public class BaseEntity {
     @Column(name = "deleted")
     private Boolean deleted = false;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Instant getCreateTimestamp() {
         return createTimestamp;
     }

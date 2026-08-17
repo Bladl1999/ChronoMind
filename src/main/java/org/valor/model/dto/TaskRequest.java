@@ -1,15 +1,17 @@
 package org.valor.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.valor.model.enums.Priority;
 
 import java.time.LocalDateTime;
 
-public class TaskRequest {
-    private String title;
-    private String description;
-    private LocalDateTime dueDate;
-    private Priority priority; // enum LOW, MEDIUM, HIGH
-    private Long categoryId;
-    private RecurrenceRequest recurrence;
-    private Long version; // для PUT/PATCH
-}
+public record TaskRequest (
+    @JsonProperty(value = "title") String title,
+    @JsonProperty(value = "description") String description,
+    @JsonProperty(value = "LocalDateTime") LocalDateTime dueDate,
+    @JsonProperty(value = "priority") Priority priority, // enum LOW, MEDIUM, HIGH
+    @JsonProperty(value = "categoryId") Long categoryId,
+    @JsonProperty(value = "recurrence") RecurrenceRequest recurrence,
+    @JsonProperty(value = "version") Long version // для PUT/PATCH
+){}
+

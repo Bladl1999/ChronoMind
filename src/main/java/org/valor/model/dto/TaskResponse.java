@@ -5,16 +5,14 @@ import org.valor.model.enums.Status;
 
 import java.time.LocalDateTime;
 
-public class TaskResponse {
-    private Long id;
-    private String title;
-    private String description;
-    private LocalDateTime dueDate;
-    private Status status; // TODO, IN_PROGRESS, DONE
-    private Priority priority;
-    private CategoryResponse category;
-    private RecurrenceResponse recurrence;
-    private Long version;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-}
+public record TaskResponse( 
+    Long id,
+    String title,
+    String description,
+    LocalDateTime dueDate,
+    Status status, // TODO, IN_PROGRESS, DONE
+    Priority priority,
+    CategoryResponse category,
+    Long categoryId,
+    RecurrenceResponse recurrence
+){}

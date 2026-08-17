@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.valor.model.dto.TaskDateUpdateRequest;
 import org.valor.model.dto.TaskRequest;
 import org.valor.model.dto.TaskResponse;
+import org.valor.model.entity.Users;
 import org.valor.model.enums.Priority;
 import org.valor.model.enums.Status;
 import org.valor.service.task.TaskService;
@@ -28,6 +29,17 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+//    @GetMapping
+//    public List<TaskResponse> getTasks(Pageable pageable,
+//                                       @RequestParam(required = false) String search,
+//                                       @RequestParam(required = false) Status status,
+//                                       @RequestParam(required = false) Priority priority,
+//                                       @RequestParam(required = false) Long categoryId,
+//                                       @RequestParam(required = false) LocalDate dueDateFrom,
+//                                       @RequestParam(required = false) LocalDate dueDateTo) {
+//        return taskService.findTasks(pageable, search, status, priority, categoryId, dueDateFrom, dueDateTo);
+//    }
+
     @GetMapping
     public Page<TaskResponse> getTasks(Pageable pageable,
                                        @RequestParam(required = false) String search,
@@ -42,7 +54,7 @@ public class TaskController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TaskResponse createTask(@RequestBody TaskRequest request,
-                                   @AuthenticationPrincipal User user) {
+                                   @AuthenticationPrincipal Users user) {
         return taskService.createTask(request, user);
     }
 
@@ -89,7 +101,7 @@ public class TaskController {
 
     @PatchMapping("/{id}/date")
     public TaskResponse updateTaskDate(@PathVariable Long id,
-                                       @RequestBody  TaskDateUpdateRequest request,
+                                       @RequestBody TaskDateUpdateRequest request,
                                        @AuthenticationPrincipal User user) {
         return taskService.updateTaskDate(id, request, user);
     }

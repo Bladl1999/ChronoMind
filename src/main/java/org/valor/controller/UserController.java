@@ -9,6 +9,7 @@ import org.valor.model.dto.ChangePasswordRequest;
 import org.valor.model.dto.UpdateProfileRequest;
 import org.valor.model.dto.UserProfile;
 import org.valor.model.dto.UserSettingsDto;
+import org.valor.model.entity.Users;
 import org.valor.service.user.UserService;
 
 @RestController
@@ -41,8 +42,8 @@ public class UserController {
     }
 
     @GetMapping("/settings")
-    public UserSettingsDto getSettings(@AuthenticationPrincipal User user) {
-        return userService.getSettings(user);
+    public UserSettingsDto getSettings(@AuthenticationPrincipal Users users) {
+        return userService.getSettings(users);
     }
 
     @PutMapping("/settings")
