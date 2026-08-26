@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.valor.model.enums.UserRole;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -21,6 +22,9 @@ public class Users extends BaseEntity implements UserDetails {
     // one‑to‑many tasks, categories
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserSettings settings;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole = UserRole.USER;
 
     public Users() {
     }
@@ -60,7 +64,7 @@ public class Users extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> simpleGrantedAuthorities = new LinkedList<>();
-        simpleGrantedAuthorities.add(new SimpleGrantedAuthority("USERS"));
+        simpleGrantedAuthorities.add(new SimpleGrantedAuthority(userName.toUpperCase()));
         return simpleGrantedAuthorities;
     }
 
