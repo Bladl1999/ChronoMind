@@ -13,7 +13,7 @@ public class UserSettings extends BaseEntity {
     private boolean soundEnabled;
     private int reminderMinutes;
     @Enumerated(EnumType.STRING)
-    private Theme theme;      // LIGHT, DARK, SYSTEM
+    private Theme theme = Theme.SYSTEM;      // LIGHT, DARK, SYSTEM
     private boolean autoSyncEnabled;
 
     public UserSettings() {

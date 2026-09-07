@@ -3,12 +3,14 @@ package org.valor.service.user;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.valor.mapper.UserMapper;
 import org.valor.mapper.UserSettingsMapper;
 import org.valor.model.dto.ChangePasswordRequest;
 import org.valor.model.dto.UpdateProfileRequest;
 import org.valor.model.dto.UserProfile;
 import org.valor.model.dto.UserSettingsDto;
 import org.valor.model.entity.Users;
+import org.valor.repository.UsersRepository;
 import org.valor.repository.UsersSettingsRepository;
 
 @Service
@@ -16,14 +18,17 @@ public class UserServiceImpl implements UserService{
 
     private final UsersSettingsRepository usersSettingsRepository;
     private final UserSettingsMapper userSettingsMapper;
+    private final UsersRepository usersRepository;
 
     @Autowired
     public UserServiceImpl(
             UsersSettingsRepository usersSettingsRepository,
-            UserSettingsMapper userSettingsMapper
+            UserSettingsMapper userSettingsMapper,
+            UsersRepository usersRepository
     ) {
         this.usersSettingsRepository = usersSettingsRepository;
         this.userSettingsMapper = userSettingsMapper;
+        this.usersRepository = usersRepository;
     }
 
     @Override
@@ -33,8 +38,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserProfile getProfile(User user) {
-        return null;
+    public UserProfile getProfile(Users user) {
+        return UserMapper.toUserProfile(usersRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("Не найден профиль")));
     }
 
     @Override

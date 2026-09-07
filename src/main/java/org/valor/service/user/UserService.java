@@ -10,7 +10,7 @@ import org.valor.model.entity.Users;
 public interface UserService {
     UserSettingsDto getSettings(Users users);
 
-    UserProfile getProfile(User user);
+    UserProfile getProfile(Users user);
 
     UserProfile updateProfile(UpdateProfileRequest request, User user);
 

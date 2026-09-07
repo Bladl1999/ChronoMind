@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.valor.model.dto.AuthResponse;
 import org.valor.model.dto.AuthorRequest;
 import org.valor.model.dto.RegisterRequest;
+import org.valor.model.entity.UserSettings;
 import org.valor.model.entity.Users;
 import org.valor.repository.UsersRepository;
+import org.valor.repository.UsersSettingsRepository;
 import org.valor.utils.RsaJwtUtils;
 
 @Service
@@ -22,18 +24,21 @@ public class AuthServiceImpl implements AuthService {
     private final RsaJwtUtils jwtUtils;
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UsersSettingsRepository usersSettingsRepository;
 
     @Autowired
     public AuthServiceImpl(
             AuthenticationManager authenticationManager,
             RsaJwtUtils jwtUtils,
             UsersRepository usersRepository,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            UsersSettingsRepository usersSettingsRepository
     ) {
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.usersRepository = usersRepository;
         this.passwordEncoder = passwordEncoder;
+        this.usersSettingsRepository = usersSettingsRepository;
     }
 
 
@@ -64,6 +69,9 @@ public class AuthServiceImpl implements AuthService {
         users.setEmail(request.email());
 
         usersRepository.saveAndFlush(users);
+        UserSettings userSettings = new UserSettings();
+        userSettings.setUser(users);
+        usersSettingsRepository.save(userSettings);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.name(), request.password())
