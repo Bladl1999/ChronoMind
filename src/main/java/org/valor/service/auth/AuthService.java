@@ -10,5 +10,5 @@ public interface AuthService {
 
     ResponseEntity<AuthResponse> login(AuthorRequest authorRequest);
 
-    void register(RegisterRequest request);
+    ResponseEntity<AuthResponse> register(RegisterRequest request);
 }

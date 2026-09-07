@@ -39,7 +39,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<AuthResponse> login(AuthorRequest authorRequest) {
-//        Users users = usersRepository.findByEmail(authorRequest.email()).orElseThrow(() -> new RuntimeException("Не верный логин или пароль"));
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authorRequest.name(), authorRequest.password())
@@ -58,11 +57,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void register(RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(RegisterRequest request) {
         Users users = new Users();
         users.setUserName(request.name());
         users.setPasswordHash(passwordEncoder.encode(request.password())); // хешируем
         users.setEmail(request.email());
-        usersRepository.save(users);
+
+        usersRepository.saveAndFlush(users);
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.name(), request.password())
+        );
+
+        String token = jwtUtils.generateToken(authentication.getName());
+        return ResponseEntity.ok(new AuthResponse(token));
     }
 }
