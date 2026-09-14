@@ -555,10 +555,10 @@
             try {
                 const settings = await api.getSettings();
                 currentSettings = settings;
-                pushToggle.checked = settings.notifications?.pushEnabled ?? true;
-                soundToggle.checked = settings.notifications?.soundEnabled ?? true;
-                reminderSelect.value = settings.notifications?.reminderMinutes ?? 15;
-                themeSelect.value = settings.theme || 'SYSTEM';
+                pushToggle.checked   = settings.pushEnabled   ?? true;
+                soundToggle.checked  = settings.soundEnabled  ?? true;
+                reminderSelect.value = settings.reminderMinutes ?? 15;
+                themeSelect.value    = settings.theme || 'SYSTEM';
                 autoSyncToggle.checked = settings.sync?.autoSyncEnabled ?? true;
             } catch (e) {
                 showToast('Ошибка загрузки настроек: ' + e.message, true);
@@ -625,12 +625,10 @@
         // ---------- СОХРАНЕНИЕ НАСТРОЕК ----------
         async function saveSettings() {
             const settings = {
-                notifications: {
-                    pushEnabled: pushToggle.checked,
-                    soundEnabled: soundToggle.checked,
-                    reminderMinutes: parseInt(reminderSelect.value) || 15
-                },
-                theme: themeSelect.value,
+                pushEnabled:     pushToggle.checked,
+                soundEnabled:    soundToggle.checked,
+                reminderMinutes: parseInt(reminderSelect.value, 10) || 15,
+                theme:           themeSelect.value,                 // LIGHT | DARK | SYSTEM
                 sync: {
                     autoSyncEnabled: autoSyncToggle.checked
                 }
@@ -639,7 +637,6 @@
                 const updated = await api.updateSettings(settings);
                 currentSettings = updated;
                 showToast('Настройки сохранены');
-                // Применить тему сразу (если выбрана)
                 applyTheme(updated.theme);
             } catch (e) {
                 showToast('Ошибка сохранения настроек: ' + e.message, true);
