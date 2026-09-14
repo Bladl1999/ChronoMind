@@ -30,14 +30,14 @@ public class UserController {
 
     @PutMapping("/me")
     public UserProfile updateProfile(@RequestBody UpdateProfileRequest request,
-                                     @AuthenticationPrincipal User user) {
+                                     @AuthenticationPrincipal Users user) {
         return userService.updateProfile(request, user);
     }
 
     @PutMapping("/me/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void changePassword(@RequestBody ChangePasswordRequest request,
-                               @AuthenticationPrincipal User user) {
+                               @AuthenticationPrincipal Users user) {
         userService.changePassword(request, user);
     }
 
@@ -48,7 +48,7 @@ public class UserController {
 
     @PutMapping("/settings")
     public UserSettingsDto updateSettings(@RequestBody UserSettingsDto settings,
-                                          @AuthenticationPrincipal User user) {
+                                          @AuthenticationPrincipal Users user) {
         return userService.updateSettings(settings, user);
     }
 }

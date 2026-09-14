@@ -3,9 +3,9 @@ package org.valor.model.dto;
 import org.valor.model.enums.Theme;
 
 public class UserSettingsDto {
-    private boolean pushEnabled;
-    private boolean soundEnabled;
-    private int reminderMinutes;
+    private Boolean pushEnabled;
+    private Boolean soundEnabled;
+    private Integer reminderMinutes;
     private Theme theme;           // enum LIGHT, DARK, SYSTEM
     private SyncSettings sync;
 
@@ -13,8 +13,8 @@ public class UserSettingsDto {
     }
 
     public UserSettingsDto(
-            boolean pushEnabled,
-            boolean soundEnabled,
+            Boolean pushEnabled,
+            Boolean soundEnabled,
             int reminderMinutes,
             Theme theme,
             SyncSettings sync
@@ -26,27 +26,27 @@ public class UserSettingsDto {
         this.sync = sync;
     }
 
-    public boolean isPushEnabled() {
+    public Boolean isPushEnabled() {
         return pushEnabled;
     }
 
-    public void setPushEnabled(boolean pushEnabled) {
+    public void setPushEnabled(Boolean pushEnabled) {
         this.pushEnabled = pushEnabled;
     }
 
-    public boolean isSoundEnabled() {
+    public Boolean isSoundEnabled() {
         return soundEnabled;
     }
 
-    public void setSoundEnabled(boolean soundEnabled) {
+    public void setSoundEnabled(Boolean soundEnabled) {
         this.soundEnabled = soundEnabled;
     }
 
-    public int getReminderMinutes() {
+    public Integer getReminderMinutes() {
         return reminderMinutes;
     }
 
-    public void setReminderMinutes(int reminderMinutes) {
+    public void setReminderMinutes(Integer reminderMinutes) {
         this.reminderMinutes = reminderMinutes;
     }
 

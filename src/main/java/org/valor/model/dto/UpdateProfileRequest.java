@@ -1,6 +1,6 @@
 package org.valor.model.dto;
 
-public class UpdateProfileRequest {
-    private String name;
-    private String email;
-}
+public record UpdateProfileRequest (
+    String name,
+    String email
+){}

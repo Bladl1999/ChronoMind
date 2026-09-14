@@ -10,7 +10,7 @@ public class UserMapper {
         UserProfile profile = new UserProfile();
         profile.setId(user.getId());
         profile.setEmail(user.getEmail());
-        profile.setName(user.getUserName());
+        profile.setName(user.getName() != null ? user.getName() : user.getUserName());
         profile.setCreatedAt(user.getCreateTimestamp());
         return profile;
     }

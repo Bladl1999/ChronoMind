@@ -1,6 +1,7 @@
 package org.valor.model.entity;
 
 import jakarta.persistence.*;
+import org.valor.model.dto.UserSettingsDto;
 import org.valor.model.enums.Theme;
 
 @Entity
@@ -33,6 +34,16 @@ public class UserSettings extends BaseEntity {
         this.reminderMinutes = reminderMinutes;
         this.theme = theme;
         this.autoSyncEnabled = autoSyncEnabled;
+    }
+
+    public void update(UserSettingsDto settings) {
+        if(settings != null) {
+            this.pushEnabled = settings.isPushEnabled() != null ? settings.isPushEnabled() : this.pushEnabled;
+            this.soundEnabled = settings.isSoundEnabled() != null ? settings.isSoundEnabled() : this.soundEnabled;
+            this.reminderMinutes = settings.getReminderMinutes() != null ? settings.getReminderMinutes() : this.reminderMinutes;
+            this.theme = settings.getTheme() != null ? settings.getTheme() : this.theme;
+            this.autoSyncEnabled = settings.getSync() != null ? settings.getSync().isAutoSyncEnabled() : this.autoSyncEnabled;
+        }
     }
 
     public Users getUser() {

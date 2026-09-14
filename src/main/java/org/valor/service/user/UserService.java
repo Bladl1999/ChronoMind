@@ -12,9 +12,9 @@ public interface UserService {
 
     UserProfile getProfile(Users user);
 
-    UserProfile updateProfile(UpdateProfileRequest request, User user);
+    UserProfile updateProfile(UpdateProfileRequest request, Users user);
 
-    void changePassword(ChangePasswordRequest request, User user);
+    void changePassword(ChangePasswordRequest request, Users user);
 
-    UserSettingsDto updateSettings(UserSettingsDto settings, User user);
+    UserSettingsDto updateSettings(UserSettingsDto settings, Users user);
 }
