@@ -56,8 +56,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void changePassword(ChangePasswordRequest request, Users user) {
+        Users getUser = usersRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("Пользователь не нацйден"));
 
+        if(!passwordEncoder.matches(request.currentPassword(), getUser.getPasswordHash())) {
+            throw new RuntimeException("Пароль не совподает");
+        }
+
+        if(passwordEncoder.matches(request.newPassword(), getUser.getPasswordHash())) {
+            throw new RuntimeException("Новый пароль не должен совпадать со старым");
+        }
+
+        getUser.setPasswordHash(passwordEncoder.encode(request.newPassword()));
     }
 
     @Override
